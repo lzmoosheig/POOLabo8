@@ -19,11 +19,19 @@ public class Board {
      * @param left  If the piece is on the left side of the board
      * @throws RuntimeException If the King is initialized with the 'left' parameter on true
      */
-    public void add(Piece piece, boolean left) {
+    private void add(Piece piece, boolean left) {
         //Permet de définir la position initiale d'une pièce
         Position position = new Position((left ? piece.getType().ordinal() - 1 : 7 - (piece.getType().ordinal() - 1)),
                 piece.getColor().ordinal() * 7);
         add(piece, position);
+    }
+
+    public void addFromLeft(Piece piece){
+        add(piece, true);
+    }
+
+    public void addFromRight(Piece piece){
+        add(piece, false);
     }
 
     public void add(Piece piece, Position position) {
@@ -44,14 +52,14 @@ public class Board {
         for (int i = 0; i < Board.SIZE; ++i) {
             add(new Pawn(color), new Position(i, 1 + color.ordinal() * 5));
         }
-        add(new Rook(color), true);
-        add(new Rook(color), false);
-        add(new Knight(color), true);
-        add(new Knight(color), false);
-        add(new Bishop(color), true);
-        add(new Bishop(color), false);
-        add(new Queen(color), true);
-        add(new King(color), true);
+        addFromLeft(new Rook(color));
+        addFromRight(new Rook(color));
+        addFromLeft(new Knight(color));
+        addFromRight(new Knight(color));
+        addFromLeft(new Bishop(color));
+        addFromRight(new Bishop(color));
+        addFromLeft(new Queen(color));
+        addFromLeft(new King(color));
     }
 
 
