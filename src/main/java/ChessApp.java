@@ -2,7 +2,7 @@ import chess.ChessController;
 import chess.ChessView;
 import chess.views.gui.GUIView;
 import chess.engine.Controller;
-import engine.board.Board;
+import chess.engine.board.Board;
 
 public class ChessApp {
     public static void main(String[] args) {

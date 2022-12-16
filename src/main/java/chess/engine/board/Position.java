@@ -1,4 +1,4 @@
-package engine.board;
+package chess.engine.board;
 
 public class Position {
     private int x;

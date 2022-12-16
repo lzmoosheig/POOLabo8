@@ -1,7 +1,7 @@
-package engine.board;
+package chess.engine.board;
 
 import chess.PlayerColor;
-import engine.piece.*;
+import chess.engine.piece.*;
 import java.util.HashMap;
 
 public class Board {
