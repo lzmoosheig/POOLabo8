@@ -2,11 +2,12 @@ package chess.engine.piece;
 
 import chess.PieceType;
 import chess.PlayerColor;
+import chess.engine.move.Move;
 
 /**
  * Classe permettant de définir une pièce du jeu
  */
-public abstract class Piece {
+public abstract class Piece implements Move{
     /**
      * Stock le type de la pièce
      */

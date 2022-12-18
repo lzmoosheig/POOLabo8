@@ -82,8 +82,11 @@ public class Controller implements ChessController {
             view.displayMessage("Aucune Pièce seléctionnée");
             return false;
         }
+
+        if (!executeMove()) {
+            return false;
+        }
         board.move(from, to);
-        executeMove();
         return true;
     }
 
@@ -113,12 +116,17 @@ public class Controller implements ChessController {
     /**
      * Réalise le mouvement et effectue les actions nécessaires pour mettre à jour la board et la view.
      */
-    private void executeMove() {
+    private boolean executeMove() {
         //TODO Manger une piece ici
         //if (to.getValue() != null){/*Manger une pièce*/}
+        if (!from.getValue().legalMove(from, to)){
+            view.displayMessage("Mouvement interdit");
+            return false;
+        }
         to.setValue(from.getValue());
         removePiece(from);
         putPiece(to);
+        return true;
     }
 
     /**
