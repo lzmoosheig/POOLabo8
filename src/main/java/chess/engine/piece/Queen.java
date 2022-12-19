@@ -3,26 +3,24 @@ package chess.engine.piece;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
+import chess.engine.move.DiagonalMove;
 import chess.engine.move.Move;
+import chess.engine.move.StraightMove;
+
 import java.util.Map;
 
 /**
- * Class définissant une piece de type Knight
+ * Class définissant une piece de type Queen
  */
-public class Knight extends Piece {
+public class Queen extends Piece implements DiagonalMove, StraightMove {
     /**
-     * Constructeur de Knight
+     * Constructeur de Queen
      *
      * @param color La couleur de la pièce
      */
-    public Knight(PlayerColor color) {
-        super(color, PieceType.KNIGHT);
+    public Queen(PlayerColor color) {
+        super(color, PieceType.QUEEN);
     }
-
-    /**
-     * Définit la distance exacte que Knight doit respecter lors d'un mouvement
-     */
-    private static final double DISTANCE_MAX = Math.sqrt(1 + 2 * 2);
 
     /**
      * Permet de définir si le mouvement est legal
@@ -33,8 +31,8 @@ public class Knight extends Piece {
      */
     @Override
     public boolean legalMove(Map.Entry<Position, Piece> from, Map.Entry<Position, Piece> to) {
-
-        if (DISTANCE_MAX != Move.pythagore(from.getKey(), to.getKey())
+        if (!DiagonalMove.isDiagonal(from.getKey(), to.getKey())
+                && !StraightMove.isStraight(from.getKey(), to.getKey())
                 || Move.moveToSameColor(from, to)) {
             return false;
         }
