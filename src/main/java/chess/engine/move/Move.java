@@ -64,6 +64,12 @@ public class Move {
         return Math.abs(to.getY() - from.getY());
     }
 
+    /**
+     * Permet de récupérer la distance parcourue depuis from vers to
+     * @param from La position de départ
+     * @param to La position de destination
+     * @return La distance parcourue entre from et to
+     */
     public static int getDistance (Position from, Position to) {
         if (isStraight(from, to)){
             return getAbsDistX(from, to) + getAbsDistY(from, to);

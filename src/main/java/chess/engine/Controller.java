@@ -100,6 +100,10 @@ public class Controller implements ChessController {
         return true;
     }
 
+    /**
+     * Définit si la pièce sélectionnée est celle du joueur courant
+     * @return true si c'est le cas
+     */
     private boolean isCorrectPlayer() {
         return from.getValue().getColor()  == (isBlackTurn? PlayerColor.WHITE : PlayerColor.BLACK);
     }
@@ -141,6 +145,10 @@ public class Controller implements ChessController {
         return true;
     }
 
+    /**
+     * Définit si la pièce a le droit de bouger
+     * @return true si elle peut
+     */
     private boolean canMove(){
 
         if (pawnCanEat()) return true;
@@ -165,6 +173,10 @@ public class Controller implements ChessController {
         return true;
     }
 
+    /**
+     * Permet de définir si un Pawn peut manger en diagonal
+     * @return true si il peut
+     */
     private boolean pawnCanEat(){
 
         if ( from.getValue() instanceof Pawn pawn
@@ -260,6 +272,5 @@ public class Controller implements ChessController {
     private void removePiece(Position position) {
         view.removePiece(position.getX(), position.getY());
     }
-
 
 }
