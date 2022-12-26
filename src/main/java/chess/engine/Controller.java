@@ -2,6 +2,7 @@ package chess.engine;
 
 import chess.ChessController;
 import chess.ChessView;
+import chess.PlayerColor;
 import chess.views.gui.GUIView;
 import chess.engine.board.*;
 import chess.engine.piece.*;
@@ -58,6 +59,7 @@ public class Controller implements ChessController {
     @Override
     public void start(ChessView view) {
         if (view == null) throw new RuntimeException("The view can't be null");
+        isBlackTurn = false;
         this.view = view;
         initialize(board);
         view.startView();
@@ -68,7 +70,7 @@ public class Controller implements ChessController {
      */
     @Override
     public void newGame() {
-        start(new GUIView(this));
+            start(new GUIView(this));
     }
 
     /**
@@ -84,15 +86,8 @@ public class Controller implements ChessController {
     public boolean move(int fromX, int fromY, int toX, int toY) {
 
         captureEvent(fromX, fromY, toX, toY);
-        //TODO Faire une methode IsMyTurn
-        if (from.getValue().getColor().ordinal() == (isBlackTurn? 0 : 1)){
-            view.displayMessage("C'est à l'équipe adverse de jouer !");
-            return false;
-        }
-        // TODO Jusque ici
-        isBlackTurn = !isBlackTurn;
         if (from.getValue() == null) {
-            view.displayMessage("Aucune Pièce seléctionnée");
+            view.displayMessage("Aucune pièce seléctionnée");
             return false;
         }
 
@@ -101,6 +96,10 @@ public class Controller implements ChessController {
         }
         board.move(from, to);
         return true;
+    }
+
+    private boolean isCorrectPlayer() {
+        return from.getValue().getColor()  == (isBlackTurn? PlayerColor.WHITE : PlayerColor.BLACK);
     }
 
     /**
@@ -130,16 +129,51 @@ public class Controller implements ChessController {
      * Réalise le mouvement et effectue les actions nécessaires pour mettre à jour la board et la view.
      */
     private boolean executeMove() {
-        //TODO Manger une piece ici
-        //if (to.getValue() != null){/*Manger une pièce*/}
-        if (!from.getValue().legalMove(board ,from.getKey(), to.getKey())){
-            view.displayMessage("Mouvement interdit");
+
+        if (!canMove()){
             return false;
         }
+
         to.setValue(from.getValue());
         removePiece(from);
         putPiece(to);
+        isBlackTurn = !isBlackTurn;
         return true;
+    }
+
+    private boolean canMove(){
+        if (isCorrectPlayer()){
+            view.displayMessage("C'est à l'équipe adverse de jouer !");
+            return false;
+        }
+        if (isLegalMove()) {
+            view.displayMessage("Mouvement interdit");
+            return false;
+        }
+        if(isSameColor()){
+            view.displayMessage("La destination possède déjà une pièce");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Permet de définir si le mouvement est legal respectivement à la règle de déplacement de la pièce séléctionnée
+     * @return True si le mouvement est légal
+     */
+    private boolean isLegalMove() {
+        return !from.getValue().legalMove(from.getKey(), to.getKey());
+    }
+
+    /**
+     * Permet de définir si la destination possède est occupée par le même joueur
+     * @return True si le la destination est de la même couleur
+     */
+    private boolean isSameColor() {
+        if (to.getValue() == null) {
+            return false;
+        }
+        return from.getValue().getColor() == to.getValue().getColor();
     }
 
     /**

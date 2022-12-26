@@ -29,6 +29,7 @@ public interface DiagonalMove extends Move {
         if (!isDiagonal(from, to)) {
             throw new RuntimeException("Mouvement non diagonale");
         }
+        //TODO on peut simplement retourner la distance en X ou Y car on sait que c'est Diagonal
         double mathematicalDistance = Math.hypot(Move.getAbsDistX(from, to), Move.getAbsDistY(from, to));
         int cellDistance = (int) Math.round(mathematicalDistance / Math.sqrt(2));
         return cellDistance;

@@ -4,11 +4,7 @@ import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
 import chess.engine.move.DiagonalMove;
-import chess.engine.move.Move;
 import chess.engine.move.StraightMove;
-import chess.engine.board.Board;
-
-import java.util.Map;
 
 /**
  * Class définissant une piece de type Queen
@@ -31,10 +27,9 @@ public class Queen extends Piece {
      * @return true si le mouvement est legal
      */
     @Override
-    public boolean legalMove(Board board,Position from, Position to) {
+    public boolean legalMove(Position from, Position to) {
         if (!DiagonalMove.isDiagonal(from, to)
-                && !StraightMove.isStraight(from, to)
-                || Move.moveToSameColor(board, from, to)) {
+                && !StraightMove.isStraight(from, to)) {
             return false;
         }
         return true;

@@ -4,7 +4,6 @@ import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
 import chess.engine.move.Move;
-import chess.engine.board.Board;
 
 /**
  * Class définissant une piece de type Knight
@@ -32,10 +31,9 @@ public class Knight extends Piece {
      * @return true si le mouvement est legal
      */
     @Override
-    public boolean legalMove(Board board, Position from, Position to) {
+    public boolean legalMove(Position from, Position to) {
 
-        if (DISTANCE_MAX != Move.pythagore(from, to)
-                || Move.moveToSameColor(board, from, to)) {
+        if (DISTANCE_MAX != Math.hypot(Move.getAbsDistX(from,to), Move.getAbsDistY(from,to))) {
             return false;
         }
         return true;

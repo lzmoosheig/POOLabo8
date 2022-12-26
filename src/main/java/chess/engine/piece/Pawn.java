@@ -3,17 +3,12 @@ package chess.engine.piece;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
-import chess.engine.move.DiagonalMove;
-import chess.engine.move.Move;
 import chess.engine.move.StraightMove;
-import chess.engine.board.Board;
-
-import java.util.Map;
 
 /**
  * Class définissant une piece de type Pawn
  */
-public class Pawn extends PieceExtend implements StraightMove, DiagonalMove {
+public class Pawn extends PieceExtend {
     /**
      * Constructeur de Pawn
      *
@@ -31,7 +26,7 @@ public class Pawn extends PieceExtend implements StraightMove, DiagonalMove {
      * @return true si le mouvement est vertical
      */
     private boolean moveAhead(Position from, Position to) {
-        int coef = getColor().ordinal() == 1 ? -1 : 1;
+        int coef = getColor() == PlayerColor.BLACK ? -1 : 1;
         return ((to.getY() - from.getY()) * coef > 0);
     }
 
@@ -43,14 +38,13 @@ public class Pawn extends PieceExtend implements StraightMove, DiagonalMove {
      * @return true si le mouvement est legal
      */
     @Override
-    public boolean legalMove(Board board, Position from, Position to) {
+    public boolean legalMove(Position from, Position to) {
         //TODO Faire le contrôle de la diagonale si il y a un pion
         //TODO Faire le contrôle que le pion puisse aller seulement en avant
 
         if (!StraightMove.isStraight(from, to)
                 || !moveAhead(from, to)
-                || StraightMove.getDistance(from, to) > (firstMove ? 2 : 1)
-                || Move.moveToSameColor(board, from, to)) {
+                || StraightMove.getDistance(from, to) > (firstMove ? 2 : 1)) {
             return false;
         }
         firstMove = false;
