@@ -6,6 +6,7 @@ import chess.engine.board.Position;
 import chess.engine.move.DiagonalMove;
 import chess.engine.move.Move;
 import chess.engine.move.StraightMove;
+import chess.engine.board.Board;
 
 import java.util.Map;
 
@@ -42,14 +43,14 @@ public class Pawn extends PieceExtend implements StraightMove, DiagonalMove {
      * @return true si le mouvement est legal
      */
     @Override
-    public boolean legalMove(Map.Entry<Position, Piece> from, Map.Entry<Position, Piece> to) {
+    public boolean legalMove(Board board, Position from, Position to) {
         //TODO Faire le contrôle de la diagonale si il y a un pion
         //TODO Faire le contrôle que le pion puisse aller seulement en avant
 
-        if (!StraightMove.isStraight(from.getKey(), to.getKey())
-                || !moveAhead(from.getKey(), to.getKey())
-                || StraightMove.getDistance(from.getKey(), to.getKey()) > (firstMove ? 2 : 1)
-                || Move.moveToSameColor(from, to)) {
+        if (!StraightMove.isStraight(from, to)
+                || !moveAhead(from, to)
+                || StraightMove.getDistance(from, to) > (firstMove ? 2 : 1)
+                || Move.moveToSameColor(board, from, to)) {
             return false;
         }
         firstMove = false;

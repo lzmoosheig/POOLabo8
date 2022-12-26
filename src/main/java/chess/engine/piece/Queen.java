@@ -6,13 +6,14 @@ import chess.engine.board.Position;
 import chess.engine.move.DiagonalMove;
 import chess.engine.move.Move;
 import chess.engine.move.StraightMove;
+import chess.engine.board.Board;
 
 import java.util.Map;
 
 /**
  * Class définissant une piece de type Queen
  */
-public class Queen extends Piece implements DiagonalMove, StraightMove {
+public class Queen extends Piece {
     /**
      * Constructeur de Queen
      *
@@ -30,10 +31,10 @@ public class Queen extends Piece implements DiagonalMove, StraightMove {
      * @return true si le mouvement est legal
      */
     @Override
-    public boolean legalMove(Map.Entry<Position, Piece> from, Map.Entry<Position, Piece> to) {
-        if (!DiagonalMove.isDiagonal(from.getKey(), to.getKey())
-                && !StraightMove.isStraight(from.getKey(), to.getKey())
-                || Move.moveToSameColor(from, to)) {
+    public boolean legalMove(Board board,Position from, Position to) {
+        if (!DiagonalMove.isDiagonal(from, to)
+                && !StraightMove.isStraight(from, to)
+                || Move.moveToSameColor(board, from, to)) {
             return false;
         }
         return true;

@@ -23,6 +23,7 @@ public class Position {
      * @param y La coordonnée y
      */
     public Position(int x, int y) {
+        //TODO vérifier out of bound
         this.x = x;
         this.y = y;
     }

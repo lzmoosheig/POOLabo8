@@ -6,6 +6,7 @@ import chess.engine.board.Board;
 
 public class ChessApp {
     public static void main(String[] args) {
+
         // 1. Création du contrôleur pour gérer le jeu d’échec
         ChessController controller = new Controller(new Board()); // Instancier un ChessController
         // 2. Création de la vue

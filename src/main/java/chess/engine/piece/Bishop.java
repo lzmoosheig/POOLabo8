@@ -2,6 +2,7 @@ package chess.engine.piece;
 
 import chess.PieceType;
 import chess.PlayerColor;
+import chess.engine.board.Board;
 import chess.engine.board.Position;
 import chess.engine.move.DiagonalMove;
 import chess.engine.move.Move;
@@ -29,9 +30,9 @@ public class Bishop extends Piece implements DiagonalMove {
      * @return true si le mouvement est legal
      */
     @Override
-    public boolean legalMove(Map.Entry<Position, Piece> from, Map.Entry<Position, Piece> to) {
-        if (!DiagonalMove.isDiagonal(from.getKey(), to.getKey())
-                || Move.moveToSameColor(from, to)) {
+    public boolean legalMove(Board board, Position from, Position to) {
+        if (!DiagonalMove.isDiagonal(from, to)
+                || Move.moveToSameColor(board, from, to)) {
             return false;
         }
         return true;

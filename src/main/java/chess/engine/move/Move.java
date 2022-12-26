@@ -2,6 +2,7 @@ package chess.engine.move;
 
 import chess.engine.board.Position;
 import chess.engine.piece.Piece;
+import chess.engine.board.Board;
 
 import java.util.Map.Entry;
 
@@ -41,8 +42,8 @@ public interface Move {
      * @param to La clé-valeur de destination
      * @return true si la destination est libre
      */
-    static boolean moveToEmptyPosition(Entry<Position, Piece> to){
-        return to.getValue() == null;
+    static boolean positionIsEmpty(Board board, Position to){
+        return board.getBoard().get(to) == null;
     }
 
     /**
@@ -51,11 +52,11 @@ public interface Move {
      * @param to La clé-valeur de destination
      * @return true si le joueur present sur la destination est de la même couleur
      */
-    static boolean moveToSameColor(Entry<Position, Piece> from, Entry<Position, Piece> to){
-        if (moveToEmptyPosition(to)) {
+    static boolean moveToSameColor(Board board, Position from, Position to){
+        if (positionIsEmpty(board, to)) {
             return false;
         }
-        return from.getValue().getColor() == to.getValue().getColor();
+        return board.getBoard().get(from).getColor() == board.getBoard().get(from).getColor();
     }
 
     /**
@@ -65,6 +66,6 @@ public interface Move {
      * @return true si le mouvement est legal
      */
     //TODO Verifier si il y a une pièce sur le tracé (sauf pour knight qui peut passer par dessus)
-    boolean legalMove(Entry<Position, Piece> from, Entry<Position, Piece> to );
+    boolean legalMove(Board board, Position from, Position to );
 
 }

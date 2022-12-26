@@ -33,6 +33,11 @@ public class Controller implements ChessController {
     private final Board board;
 
     /**
+     * Définit si c'est le tour de blanc
+     */
+    private boolean isBlackTurn = false;
+
+    /**
      * Constructeur du Controller
      *
      * @param board La board que le Controller doit controller
@@ -77,7 +82,15 @@ public class Controller implements ChessController {
      */
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
+
         captureEvent(fromX, fromY, toX, toY);
+        //TODO Faire une methode IsMyTurn
+        if (from.getValue().getColor().ordinal() == (isBlackTurn? 0 : 1)){
+            view.displayMessage("C'est à l'équipe adverse de jouer !");
+            return false;
+        }
+        // TODO Jusque ici
+        isBlackTurn = !isBlackTurn;
         if (from.getValue() == null) {
             view.displayMessage("Aucune Pièce seléctionnée");
             return false;
@@ -119,7 +132,7 @@ public class Controller implements ChessController {
     private boolean executeMove() {
         //TODO Manger une piece ici
         //if (to.getValue() != null){/*Manger une pièce*/}
-        if (!from.getValue().legalMove(from, to)){
+        if (!from.getValue().legalMove(board ,from.getKey(), to.getKey())){
             view.displayMessage("Mouvement interdit");
             return false;
         }
@@ -152,7 +165,7 @@ public class Controller implements ChessController {
      * Permet de mettre à jour la view avec les pièces du board
      */
     private void putPieces() {
-        for (Entry<Position, Piece> entry : board.getPieces().entrySet()) {
+        for (Entry<Position, Piece> entry : board.getBoard().entrySet()) {
             putPiece(entry.getKey(), entry.getValue());
         }
     }

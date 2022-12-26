@@ -2,6 +2,7 @@ package chess.engine.move;
 
 import chess.engine.board.Position;
 
+
 /**
  * Interface permettant de distribuer des méthodes static pour les mouvements orthogonaux
  */
@@ -28,8 +29,8 @@ public interface DiagonalMove extends Move {
         if (!isDiagonal(from, to)) {
             throw new RuntimeException("Mouvement non diagonale");
         }
-        return (int) (Math.sqrt(
-                Math.pow(Move.getAbsDistX(from, to), 2) + Math.pow(Move.getAbsDistX(from, to), 2))
-                / Math.sqrt(2));
+        double mathematicalDistance = Math.hypot(Move.getAbsDistX(from, to), Move.getAbsDistY(from, to));
+        int cellDistance = (int) Math.round(mathematicalDistance / Math.sqrt(2));
+        return cellDistance;
     }
 }

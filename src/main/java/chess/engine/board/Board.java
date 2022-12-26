@@ -46,7 +46,7 @@ public class Board {
         add(to.getKey(), from.getValue());
     }
 
-    public HashMap<Position, Piece> getPieces() {
+    public HashMap<Position, Piece> getBoard() {
         //TODO Copie profonde de board à faire
         return board;
     }
