@@ -2,7 +2,9 @@ package chess.engine;
 
 import chess.ChessController;
 import chess.ChessView;
+import chess.PieceType;
 import chess.PlayerColor;
+import chess.engine.move.Move;
 import chess.views.gui.GUIView;
 import chess.engine.board.*;
 import chess.engine.piece.*;
@@ -129,11 +131,9 @@ public class Controller implements ChessController {
      * Réalise le mouvement et effectue les actions nécessaires pour mettre à jour la board et la view.
      */
     private boolean executeMove() {
-
         if (!canMove()){
             return false;
         }
-
         to.setValue(from.getValue());
         removePiece(from);
         putPiece(to);
@@ -142,6 +142,9 @@ public class Controller implements ChessController {
     }
 
     private boolean canMove(){
+
+        if (pawnCanEat()) return true;
+
         if (isCorrectPlayer()){
             view.displayMessage("C'est à l'équipe adverse de jouer !");
             return false;
@@ -154,7 +157,26 @@ public class Controller implements ChessController {
             view.displayMessage("La destination possède déjà une pièce");
             return false;
         }
+
+        if(from.getValue().getType() != PieceType.KNIGHT && collisionExist()){
+            view.displayMessage("Il y a une collision");
+            return false;
+        }
         return true;
+    }
+
+    private boolean pawnCanEat(){
+
+        if ( from.getValue() instanceof Pawn pawn
+                && to.getValue() != null
+                && Move.isDiagonal(from.getKey(), to.getKey())
+                && Move.getDistance(from.getKey(), to.getKey()) == 1 ){
+
+            return  pawn.moveAhead(from.getKey(), to.getKey())
+                    && to.getValue().getColor() != from.getValue().getColor();
+        }
+        return false;
+
     }
 
     /**
@@ -174,6 +196,23 @@ public class Controller implements ChessController {
             return false;
         }
         return from.getValue().getColor() == to.getValue().getColor();
+    }
+
+    /**
+     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision
+     * @return true si il y a une collision
+     */
+    private boolean collisionExist() {
+        Position[] way = Move.getWay(from.getKey(), to.getKey());
+        if (way == null) {
+            return false;
+        }
+        for (Position p : way){
+            if (board.getEntry(p).getValue() != null){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

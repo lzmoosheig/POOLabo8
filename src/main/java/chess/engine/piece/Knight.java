@@ -32,10 +32,6 @@ public class Knight extends Piece {
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-
-        if (DISTANCE_MAX != Math.hypot(Move.getAbsDistX(from,to), Move.getAbsDistY(from,to))) {
-            return false;
-        }
-        return true;
+        return DISTANCE_MAX == Math.hypot(Move.getAbsDistX(from,to), Move.getAbsDistY(from,to));
     }
 }

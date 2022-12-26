@@ -3,7 +3,7 @@ package chess.engine.piece;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
-import chess.engine.move.StraightMove;
+import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Pawn
@@ -25,7 +25,7 @@ public class Pawn extends PieceExtend {
      * @param to   La position de destination
      * @return true si le mouvement est vertical
      */
-    private boolean moveAhead(Position from, Position to) {
+    public boolean moveAhead(Position from, Position to) {
         int coef = getColor() == PlayerColor.BLACK ? -1 : 1;
         return ((to.getY() - from.getY()) * coef > 0);
     }
@@ -39,12 +39,10 @@ public class Pawn extends PieceExtend {
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-        //TODO Faire le contrôle de la diagonale si il y a un pion
-        //TODO Faire le contrôle que le pion puisse aller seulement en avant
-
-        if (!StraightMove.isStraight(from, to)
-                || !moveAhead(from, to)
-                || StraightMove.getDistance(from, to) > (firstMove ? 2 : 1)) {
+        boolean isLegal = Move.isStraight(from, to)
+                && moveAhead(from, to)
+                && Move.getDistance(from, to) <= (firstMove ? 2 : 1);
+        if (!isLegal){
             return false;
         }
         firstMove = false;

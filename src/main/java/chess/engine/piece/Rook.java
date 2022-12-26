@@ -3,7 +3,7 @@ package chess.engine.piece;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
-import chess.engine.move.StraightMove;
+import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Rook
@@ -27,9 +27,6 @@ public class Rook extends PieceExtend {
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-        if (!StraightMove.isStraight(from, to)) {
-            return false;
-        }
-        return true;
+        return Move.isStraight(from, to);
     }
 }

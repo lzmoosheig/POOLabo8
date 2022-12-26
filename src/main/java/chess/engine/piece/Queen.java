@@ -3,8 +3,7 @@ package chess.engine.piece;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
-import chess.engine.move.DiagonalMove;
-import chess.engine.move.StraightMove;
+import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Queen
@@ -28,10 +27,7 @@ public class Queen extends Piece {
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-        if (!DiagonalMove.isDiagonal(from, to)
-                && !StraightMove.isStraight(from, to)) {
-            return false;
-        }
-        return true;
+
+        return Move.isDiagonal(from, to) || Move.isStraight(from, to);
     }
 }

@@ -22,21 +22,12 @@ public class King extends PieceExtend {
     /**
      * Permet de définir si le mouvement est legal
      *
-     * @param from La clé-valeur de départ
-     * @param to   La clé-valeur de destination
+     * @param from La position de départ
+     * @param to   La position de destination
      * @return true si le mouvement est legal
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-        if (StraightMove.isStraight(from, to)
-                && StraightMove.getDistance(from, to) == 1) {
-            return true;
-        }
-
-        if (DiagonalMove.isDiagonal(from, to)
-                && DiagonalMove.getDistance(from, to) == 1) {
-            return true;
-        }
-        return false;
+        return Move.getDistance(from, to) == 1;
     }
 }
