@@ -1,5 +1,6 @@
 package chess.engine.piece;
 
+import chess.ChessView;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
@@ -8,7 +9,7 @@ import chess.engine.move.Move;
 /**
  * Class définissant une piece de type Knight
  */
-public class Knight extends Piece {
+public class Knight extends Piece implements ChessView.UserChoice {
     /**
      * Constructeur de Knight
      *
@@ -33,5 +34,9 @@ public class Knight extends Piece {
     @Override
     public boolean legalMove(Position from, Position to) {
         return DISTANCE_MAX == Math.hypot(Move.getAbsDistX(from,to), Move.getAbsDistY(from,to));
+    }
+    @Override
+    public String textValue() {
+        return super.getType().toString();
     }
 }

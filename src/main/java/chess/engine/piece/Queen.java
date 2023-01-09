@@ -1,5 +1,6 @@
 package chess.engine.piece;
 
+import chess.ChessView;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
@@ -8,7 +9,7 @@ import chess.engine.move.Move;
 /**
  * Class définissant une piece de type Queen
  */
-public class Queen extends Piece {
+public class Queen extends Piece implements ChessView.UserChoice {
     /**
      * Constructeur de Queen
      *
@@ -30,4 +31,10 @@ public class Queen extends Piece {
 
         return Move.isDiagonal(from, to) || Move.isStraight(from, to);
     }
+
+    @Override
+    public String textValue() {
+        return super.getType().toString();
+    }
+
 }

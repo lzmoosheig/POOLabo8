@@ -1,5 +1,6 @@
 package chess.engine.piece;
 
+import chess.ChessView;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
@@ -8,7 +9,7 @@ import chess.engine.move.Move;
 /**
  * Class définissant une piece de type Bishop
  */
-public class Bishop extends Piece {
+public class Bishop extends Piece implements ChessView.UserChoice {
     /**
      * Constructeur de Bishop
      *
@@ -28,5 +29,10 @@ public class Bishop extends Piece {
     @Override
     public boolean legalMove(Position from, Position to) {
         return Move.isDiagonal(from, to);
+    }
+
+    @Override
+    public String textValue() {
+        return super.getType().toString();
     }
 }

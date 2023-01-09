@@ -26,4 +26,8 @@ public abstract class PieceExtend extends Piece {
     {
         return firstMove;
     }
+
+    public void setFirstMove() {
+        this.firstMove = false;
+    }
 }

@@ -45,7 +45,6 @@ public class Pawn extends PieceExtend {
         if (!isLegal){
             return false;
         }
-        firstMove = false;
         return true;
     }
 }

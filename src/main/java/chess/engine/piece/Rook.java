@@ -1,5 +1,6 @@
 package chess.engine.piece;
 
+import chess.ChessView;
 import chess.PieceType;
 import chess.PlayerColor;
 import chess.engine.board.Position;
@@ -8,7 +9,7 @@ import chess.engine.move.Move;
 /**
  * Class définissant une piece de type Rook
  */
-public class Rook extends PieceExtend {
+public class Rook extends PieceExtend implements ChessView.UserChoice {
     /**
      * Constructeur de Rook
      *
@@ -28,5 +29,10 @@ public class Rook extends PieceExtend {
     @Override
     public boolean legalMove(Position from, Position to) {
         return Move.isStraight(from, to);
+    }
+
+    @Override
+    public String textValue() {
+        return super.getType().toString();
     }
 }
