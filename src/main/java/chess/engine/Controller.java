@@ -4,14 +4,14 @@ import chess.ChessController;
 import chess.ChessView;
 import chess.PieceType;
 import chess.PlayerColor;
+import chess.engine.board.Board;
+import chess.engine.board.Position;
 import chess.engine.move.Move;
-import chess.views.gui.GUIView;
-import chess.engine.board.*;
-import chess.engine.piece.*;
-
+import chess.engine.piece.King;
+import chess.engine.piece.Pawn;
+import chess.engine.piece.Piece;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
@@ -43,27 +43,31 @@ public class Controller implements ChessController {
     private Board boardSnapShot = new Board();
 
     /**
-     * OPTIMISATION
-     * Permet de stocker la position des 2 rois de manière à ne pas itérer sur toutes les pièces pour retrouver
-     * la position d'un roi.
+     * Définit si c'est le tour de blanc
      */
-    private HashMap<PlayerColor, Position> kings = new HashMap<>(){
-        {
-            put(PlayerColor.WHITE, new Position(4,0));
-            put(PlayerColor.BLACK, new Position(4,7));
+    private boolean isBlackTurn = false;
+    /**
+     * Constructeur du Controller
+     *
+     * @param board La board que le Controller doit controller
+     */
+    public Controller(Board board) {
+        if (board == null) {
+            throw new RuntimeException("board can't be null");
         }
-    };
+        this.board = board;
+    }
 
     private boolean playerIsCheck(Position positionOfKingToCheck){
         return playerIsCheck(board, positionOfKingToCheck);
     }
+
     private boolean playerIsCheck(Board board, Position positionOfKingToCheck){
         Piece kingToCheck = board.getPiece(positionOfKingToCheck);
         for(Entry<Position, Piece> entry : board.getBoard().entrySet()){
             // on ne compare par ses propres pions
-            if ( kingToCheck == null
-                    ||!(kingToCheck instanceof King)
-                    || entry.getValue().getColor() == kingToCheck.getColor()) {
+            if (!(kingToCheck instanceof King)
+                    || entry.getValue().getColor() != oppenentPlayer(kingToCheck.getColor())) {
                 continue;
             }
             if (isCheck(entry.getKey(), positionOfKingToCheck)){
@@ -72,19 +76,26 @@ public class Controller implements ChessController {
         }
         return false;
     }
+
+    private Entry<Position, Piece> getKing(PlayerColor color){
+        for (Entry<Position, Piece> entry : board.getBoard().entrySet()){
+            if (entry.getValue() instanceof King king && king.getColor() == color){
+                return entry;
+            }
+        }
+        return null;
+    }
+
     private boolean isCheck(Position from, Position to){
-        Piece piece = board.getPiece(from);
-        boolean isCheck = piece.legalMove(from, to) && !collisionExist(from, to);
-        return isCheck;
+        return board.getPiece(from).legalMove(from, to) && !collisionExist(from, to);
     }
 
     private boolean checkmate(PlayerColor player){
-        Position kingPosition = kings.get(player);
+        Position kingPosition = getKing(player).getKey();
 
         //sequences de directions
         int[] sequencesX = {-1, -1, -1, 0, 0, 1, 1, 1};
         int[] sequencesY = {-1, 0, 1, -1, 1, -1, 0, 1};
-        boolean isCheckmate = true;
 
         ArrayList<Position> validPositions = new ArrayList<>();
 
@@ -109,29 +120,17 @@ public class Controller implements ChessController {
         for (Position validPosition : validPositions){
             Board simulationBoard = new Board(board);
             simulationBoard.move(kingPosition, validPosition);
+            for (Entry<Position, Piece> entry : simulationBoard.getBoard().entrySet()){
+                if (entry.getValue().legalMove(entry.getKey(), validPosition)
+                        && !collisionExist(entry.getKey(), validPosition)){
+                    return false;
+                }
+            }
             if (!playerIsCheck(simulationBoard, validPosition)){
                 return false;
             }
         }
         return true;
-    }
-
-
-    /**
-     * Définit si c'est le tour de blanc
-     */
-    private boolean isBlackTurn = false;
-
-    /**
-     * Constructeur du Controller
-     *
-     * @param board La board que le Controller doit controller
-     */
-    public Controller(Board board) {
-        if (board == null) {
-            throw new RuntimeException("board can't be null");
-        }
-        this.board = board;
     }
 
     /**
@@ -185,22 +184,21 @@ public class Controller implements ChessController {
             return false;
         }
 
-        updateKingsPosition();
+
 
         to.setValue(from.getValue());
 
         board.move(from.getKey(), to.getKey());
 
-        if(playerIsCheck(kings.get(currentPlayer()))) {
+        if(playerIsCheck(getKing(currentPlayer()).getKey())) {
             view.displayMessage("Mouvement impossible - Echec");
             unDo();
             return false;
         }
 
-        if(checkmate(currentPlayer())) {
-            view.displayMessage("Player "+ currentPlayer() + " lose");
+        if(checkmate(oppenentPlayer())) {
+            view.displayMessage("Player "+ oppenentPlayer() + " lose");
         }
-
         isBlackTurn = !isBlackTurn;
         refreshView();
         return true;
@@ -208,6 +206,13 @@ public class Controller implements ChessController {
 
     private PlayerColor currentPlayer(){
         return isBlackTurn ? PlayerColor.BLACK : PlayerColor.WHITE;
+    }
+
+    private PlayerColor oppenentPlayer(){
+        return oppenentPlayer(currentPlayer());
+    }
+    private PlayerColor oppenentPlayer(PlayerColor player){
+        return player == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE;
     }
 
     /**
@@ -252,20 +257,6 @@ public class Controller implements ChessController {
         board.initialize();
         putPieces();
     }
-
-    private void updateKingsPosition() {
-        if (from.getValue().getType() == PieceType.KING){
-            PlayerColor color = (isBlackTurn ? PlayerColor.BLACK : PlayerColor.WHITE);
-            Position position = to.getKey();
-            kings.put(color, position);
-        }
-    }
-
-    private void updateView() {
-        removePiece(from);
-        putPiece(to);
-    }
-
     private void refreshView(){
         clearView();
         putPieces();
@@ -355,7 +346,6 @@ public class Controller implements ChessController {
      * @to La position de destination
      * @return true si il y a une collision
      */
-
     private boolean collisionExist(Position from, Position to) {
         if (board.getPiece(from).getType() == PieceType.KNIGHT) return false;
         Position[] way = Move.getWay(from, to);
