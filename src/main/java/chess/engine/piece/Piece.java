@@ -88,4 +88,6 @@ public abstract class Piece {
     }
 
     public abstract boolean legalMove(Position from, Position to);
+
+    public abstract boolean getFirstMove();
 }

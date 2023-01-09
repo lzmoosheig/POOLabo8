@@ -10,7 +10,7 @@ public abstract class PieceExtend extends Piece {
     /**
      * Permet de savoir si la pièce à déjà fait son premier mouvement
      */
-    boolean firstMove = true;
+    protected boolean firstMove = true;
 
     /**
      * Constructeur d'une pièce
@@ -20,5 +20,10 @@ public abstract class PieceExtend extends Piece {
      */
     public PieceExtend(PlayerColor color, PieceType type) {
         super(color, type);
+    }
+
+    public boolean getFirstMove()
+    {
+        return firstMove;
     }
 }
