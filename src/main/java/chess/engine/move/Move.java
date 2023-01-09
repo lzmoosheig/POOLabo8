@@ -68,7 +68,7 @@ public class Move {
      * Permet de récupérer la distance parcourue depuis from vers to
      * @param from La position de départ
      * @param to La position de destination
-     * @return La distance parcourue entre from et to
+     * @return La distance parcourue entre from et to, -1 si la distance n'est pas orthogonale ou diagonale
      */
     public static int getDistance (Position from, Position to) {
         if (isStraight(from, to)){
@@ -77,7 +77,7 @@ public class Move {
         if (isDiagonal(from, to)) {
             return getAbsDistX(from, to);
         }
-        throw new RuntimeException("Mouvement illégal");
+        return -1;
     }
 
     /**
@@ -87,12 +87,13 @@ public class Move {
      * @return un tableau de positions entre from (non compris) et to (non compris)
      */
     public static Position[] getWay(Position from, Position to){
-        if(getDistance(from, to) == 1){
+        int dist = getDistance(from, to);
+        if(dist == 1){
             return null;
         }
         int xCoef = getDistX(from, to) < 0 ? -1 : 1 ;
         int yCoef = getDistY(from, to) < 0 ? -1 : 1 ;
-        Position[] way = new Position[getDistance(from, to) - 1];
+        Position[] way = new Position[dist - 1];
         if (isDiagonal(from, to)){
             for (int i = 1; i < getAbsDistX(from, to); ++i){
                 int x = from.getX() + i * xCoef;
@@ -103,14 +104,14 @@ public class Move {
         }
         if (isStraight(from, to)){
             if(getDistX(from, to) == 0){
-                for (int i = 1; i < getAbsDistY(from, to) ; ++i){
+                for (int i = 1 ; i < getAbsDistY(from, to) ; ++i){
                     int y = from.getY() + i * yCoef;
                     way[i-1] = new Position(from.getX(),y) ;
                 }
             }
             if(getDistY(from, to) == 0){
                 for (int i = 1; i < getAbsDistX(from, to) ; ++i){
-                    int x = from.getY() + i * xCoef;
+                    int x = from.getX() + i * xCoef;
                     way[i-1] = new Position(x,from.getY()) ;
                 }
             }

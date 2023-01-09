@@ -10,6 +10,8 @@ import chess.engine.board.*;
 import chess.engine.piece.*;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
@@ -33,7 +35,87 @@ public class Controller implements ChessController {
     /**
      * Stock la board que le Controlleur doit controller
      */
-    private final Board board;
+    private Board board;
+
+    /**
+     * Stock un snapshot de la board afin de rétablir un état antérieur
+     */
+    private Board boardSnapShot = new Board();
+
+    /**
+     * OPTIMISATION
+     * Permet de stocker la position des 2 rois de manière à ne pas itérer sur toutes les pièces pour retrouver
+     * la position d'un roi.
+     */
+    private HashMap<PlayerColor, Position> kings = new HashMap<>(){
+        {
+            put(PlayerColor.WHITE, new Position(4,0));
+            put(PlayerColor.BLACK, new Position(4,7));
+        }
+    };
+
+    private boolean playerIsCheck(Position positionOfKingToCheck){
+        return playerIsCheck(board, positionOfKingToCheck);
+    }
+    private boolean playerIsCheck(Board board, Position positionOfKingToCheck){
+        Piece kingToCheck = board.getPiece(positionOfKingToCheck);
+        for(Entry<Position, Piece> entry : board.getBoard().entrySet()){
+            // on ne compare par ses propres pions
+            if ( kingToCheck == null
+                    ||!(kingToCheck instanceof King)
+                    || entry.getValue().getColor() == kingToCheck.getColor()) {
+                continue;
+            }
+            if (isCheck(entry.getKey(), positionOfKingToCheck)){
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean isCheck(Position from, Position to){
+        Piece piece = board.getPiece(from);
+        boolean isCheck = piece.legalMove(from, to) && !collisionExist(from, to);
+        return isCheck;
+    }
+
+    private boolean checkmate(PlayerColor player){
+        Position kingPosition = kings.get(player);
+
+        //sequences de directions
+        int[] sequencesX = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] sequencesY = {-1, 0, 1, -1, 1, -1, 0, 1};
+        boolean isCheckmate = true;
+
+        ArrayList<Position> validPositions = new ArrayList<>();
+
+        for (int i = 0; i < 8; i++) {
+            int futurX = kingPosition.getX() + sequencesX[i];
+            int futurY = kingPosition.getY() + sequencesY[i];
+            Position futurPosition = new Position(futurX, futurY);
+            Piece pieceOnFuturPosition = board.getPiece(futurPosition);
+
+            if (futurPosition.isValidPosition() &&
+                    (pieceOnFuturPosition == null || pieceOnFuturPosition.getColor() != player)){
+                Board simulationBoard = new Board(board);
+                simulationBoard.move(kingPosition, futurPosition);
+                validPositions.add(futurPosition);
+            }
+        }
+
+        if (validPositions.size() == 0) {
+            return false;
+        }
+
+        for (Position validPosition : validPositions){
+            Board simulationBoard = new Board(board);
+            simulationBoard.move(kingPosition, validPosition);
+            if (!playerIsCheck(simulationBoard, validPosition)){
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * Définit si c'est le tour de blanc
@@ -60,10 +142,8 @@ public class Controller implements ChessController {
      */
     @Override
     public void start(ChessView view) {
-        if (view == null) throw new RuntimeException("The view can't be null");
-        isBlackTurn = false;
         this.view = view;
-        initialize(board);
+        newGame();
         view.startView();
     }
 
@@ -72,7 +152,9 @@ public class Controller implements ChessController {
      */
     @Override
     public void newGame() {
-            start(new GUIView(this));
+        if (view == null) throw new RuntimeException("The view can't be null");
+        isBlackTurn = false;
+        initialize();
     }
 
     /**
@@ -82,22 +164,63 @@ public class Controller implements ChessController {
      * @param fromY la coordonnée sur Y du premier click
      * @param toX   la coordonnée sur X du second click
      * @param toY   la coordonnée sur Y du second click
-     * @return true si le déplacement à bien été effectué
+     * @return true si le déplacement a bien été effectué
+     *
      */
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
-
+        boardSnapShot = new Board(board);
         captureEvent(fromX, fromY, toX, toY);
+
+        if (!to.getKey().isValidPosition()){
+            view.displayMessage("Position invalide");
+            return false;
+        }
         if (from.getValue() == null) {
             view.displayMessage("Aucune pièce seléctionnée");
             return false;
         }
 
-        if (!executeMove()) {
+        if (!canMove()){
             return false;
         }
-        board.move(from, to);
+
+        updateKingsPosition();
+
+        to.setValue(from.getValue());
+
+        board.move(from.getKey(), to.getKey());
+
+        if(playerIsCheck(kings.get(currentPlayer()))) {
+            view.displayMessage("Mouvement impossible - Echec");
+            unDo();
+            return false;
+        }
+
+        if(checkmate(currentPlayer())) {
+            view.displayMessage("Player "+ currentPlayer() + " lose");
+        }
+
+        isBlackTurn = !isBlackTurn;
+        refreshView();
         return true;
+    }
+
+    private PlayerColor currentPlayer(){
+        return isBlackTurn ? PlayerColor.BLACK : PlayerColor.WHITE;
+    }
+
+    /**
+     * Permet d'annuler la dernière action
+     */
+    private void unDo(){
+        for (Entry<Position, Piece> entry : board.getBoard().entrySet()){
+            removePiece(entry);
+        }
+        for (Entry<Position, Piece> entry : boardSnapShot.getBoard().entrySet()){
+            putPiece(entry);
+        }
+        board = boardSnapShot;
     }
 
     /**
@@ -124,25 +247,36 @@ public class Controller implements ChessController {
     /**
      * Initialisation d'une vue avec les pièces dans leurs positions initiales en les stockant dans une board
      *
-     * @param board La board dans laquelle les pièces vont être stockées
      */
-    private void initialize(Board board) {
+    private void initialize() {
         board.initialize();
         putPieces();
     }
 
-    /**
-     * Réalise le mouvement et effectue les actions nécessaires pour mettre à jour la board et la view.
-     */
-    private boolean executeMove() {
-        if (!canMove()){
-            return false;
+    private void updateKingsPosition() {
+        if (from.getValue().getType() == PieceType.KING){
+            PlayerColor color = (isBlackTurn ? PlayerColor.BLACK : PlayerColor.WHITE);
+            Position position = to.getKey();
+            kings.put(color, position);
         }
-        to.setValue(from.getValue());
+    }
+
+    private void updateView() {
         removePiece(from);
         putPiece(to);
-        isBlackTurn = !isBlackTurn;
-        return true;
+    }
+
+    private void refreshView(){
+        clearView();
+        putPieces();
+    }
+
+    private void clearView() {
+        for (int x = 0; x < board.SIZE; ++x ){
+            for (int y = 0; y < board.SIZE; ++y){
+                view.removePiece(x, y);
+            }
+        }
     }
 
     /**
@@ -151,12 +285,12 @@ public class Controller implements ChessController {
      */
     private boolean canMove(){
 
-        if (pawnCanEat()) return true;
-
         if (isCorrectPlayer()){
             view.displayMessage("C'est à l'équipe adverse de jouer !");
             return false;
         }
+        if (pawnCanEat()) return true;
+
         if (isLegalMove()) {
             view.displayMessage("Mouvement interdit");
             return false;
@@ -166,7 +300,7 @@ public class Controller implements ChessController {
             return false;
         }
 
-        if(from.getValue().getType() != PieceType.KNIGHT && collisionExist()){
+        if(collisionExist()){
             view.displayMessage("Il y a une collision");
             return false;
         }
@@ -192,30 +326,39 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Permet de définir si le mouvement est legal respectivement à la règle de déplacement de la pièce séléctionnée
+     * Permet de définir si le mouvement est legal respectivement à la règle de déplacement de la pièce sélectionnée
      * @return True si le mouvement est légal
      */
     private boolean isLegalMove() {
         return !from.getValue().legalMove(from.getKey(), to.getKey());
     }
 
+
+    private boolean isSameColor(Position to){
+        Piece piece = board.getPiece(to);
+        if (piece == null) {
+            return false;
+        }
+        return from.getValue().getColor() == piece.getColor();
+    }
     /**
      * Permet de définir si la destination possède est occupée par le même joueur
      * @return True si le la destination est de la même couleur
      */
     private boolean isSameColor() {
-        if (to.getValue() == null) {
-            return false;
-        }
-        return from.getValue().getColor() == to.getValue().getColor();
+       return isSameColor(to.getKey());
     }
 
     /**
      * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision
+     * @from la position de départ
+     * @to La position de destination
      * @return true si il y a une collision
      */
-    private boolean collisionExist() {
-        Position[] way = Move.getWay(from.getKey(), to.getKey());
+
+    private boolean collisionExist(Position from, Position to) {
+        if (board.getPiece(from).getType() == PieceType.KNIGHT) return false;
+        Position[] way = Move.getWay(from, to);
         if (way == null) {
             return false;
         }
@@ -225,6 +368,14 @@ public class Controller implements ChessController {
             }
         }
         return false;
+    }
+
+    /**
+     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision
+     * @return true si il y a une collision
+     */
+    private boolean collisionExist(){
+        return collisionExist(from.getKey(), to.getKey());
     }
 
     /**
@@ -243,6 +394,7 @@ public class Controller implements ChessController {
      * @param piece    La pièce à ajouter
      */
     private void putPiece(Position position, Piece piece) {
+        if (piece == null) return;
         view.putPiece(piece.getType(), piece.getColor(), position.getX(), position.getY());
     }
 
@@ -272,5 +424,4 @@ public class Controller implements ChessController {
     private void removePiece(Position position) {
         view.removePiece(position.getX(), position.getY());
     }
-
 }

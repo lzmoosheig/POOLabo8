@@ -25,7 +25,6 @@ public class Position {
      * @param y La coordonnée y
      */
     public Position(int x, int y) {
-        //TODO vérifier out of bound
         this.x = x;
         this.y = y;
     }
@@ -107,5 +106,12 @@ public class Position {
                 return new Position[]{};
             }
         }
+    }
+
+    public boolean isValidPosition(){
+        return x >= 0 && x < 8 && y >= 0 && y < 8;
+    }
+    @Override public String toString(){
+        return "x : " + x + " - y : " + y;
     }
 }

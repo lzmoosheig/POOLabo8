@@ -8,25 +8,35 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-public class Board {
+public class Board implements Cloneable {
     /**
      * Constant of board Size
      */
     public final static byte SIZE = 8;
     private HashMap<Position, Piece> board = new HashMap<>();
 
+    public Board(){}
+    public Board(Board other){
+        board.putAll(other.getBoard());
+    }
     public void add(Position position, Piece piece) {
         board.put(position, piece);
     }
 
-    public void move(Entry<Position, Piece> from, Entry<Position, Piece> to){
-        board.remove(from.getKey());
-        add(to.getKey(), from.getValue());
+    public void remove(Position position) {
+        board.remove(position);
     }
 
+    public void move(Position from, Position to){
+        add(to, board.get(from));
+        board.remove(from);
+    }
+
+    public Piece getPiece(Position position){
+        return board.get(position);
+    }
     public HashMap<Position, Piece> getBoard() {
-        //TODO Copie profonde de board à faire
-        return board;
+        return new HashMap<>(board);
     }
 
     public Entry<Position, Piece> getEntry(Position position){
@@ -41,7 +51,6 @@ public class Board {
         initialize(PlayerColor.BLACK);
         initialize(PlayerColor.WHITE);
     }
-
 
     private void initialize(PlayerColor color) {
         for (Position position : Position.InitialPosition(PieceType.PAWN, color)) {
