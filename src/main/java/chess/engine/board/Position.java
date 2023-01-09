@@ -1,5 +1,7 @@
 package chess.engine.board;
 
+import chess.PieceType;
+import chess.PlayerColor;
 import java.util.Objects;
 
 /**
@@ -23,6 +25,7 @@ public class Position {
      * @param y La coordonnée y
      */
     public Position(int x, int y) {
+        //TODO vérifier out of bound
         this.x = x;
         this.y = y;
     }
@@ -71,5 +74,38 @@ public class Position {
             return x == position.x && y == position.y;
         }
         return false;
+    }
+
+    public static Position[] InitialPosition(PieceType type, PlayerColor color) {
+        int pawnTeamIndex = color == PlayerColor.BLACK ? 6 : 1;
+        int teamIndex = color == PlayerColor.BLACK ? 7 : 0;
+        switch (type) {
+            case PAWN -> {
+                Position[] positions = new Position[Board.SIZE];
+                for (int i = 0; i < Board.SIZE; ++i){
+                    positions[i] = new Position(i, pawnTeamIndex);
+                }
+                return positions;
+            }
+
+            case ROOK -> {
+                return new Position[] {new Position(0, teamIndex), new Position(7, teamIndex)};
+            }
+            case KNIGHT -> {
+                return new Position[] {new Position(1, teamIndex), new Position(6, teamIndex)};
+            }
+            case BISHOP -> {
+                return new Position[] {new Position(2, teamIndex), new Position(5, teamIndex)};
+            }
+            case QUEEN -> {
+                return new Position[] {new Position(3, teamIndex)};
+            }
+            case KING -> {
+                return new Position[] {new Position(4, teamIndex)};
+            }
+            default ->{
+                return new Position[]{};
+            }
+        }
     }
 }

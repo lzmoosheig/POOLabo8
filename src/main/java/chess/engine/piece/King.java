@@ -5,12 +5,11 @@ import chess.PlayerColor;
 import chess.engine.board.Position;
 import chess.engine.move.*;
 
-import java.util.Map;
 
 /**
  * Class définissant une piece de type King
  */
-public class King extends PieceExtend implements StraightMove, DiagonalMove {
+public class King extends PieceExtend {
     /**
      * Constructeur de King
      *
@@ -23,24 +22,12 @@ public class King extends PieceExtend implements StraightMove, DiagonalMove {
     /**
      * Permet de définir si le mouvement est legal
      *
-     * @param from La clé-valeur de départ
-     * @param to   La clé-valeur de destination
+     * @param from La position de départ
+     * @param to   La position de destination
      * @return true si le mouvement est legal
      */
     @Override
-    public boolean legalMove(Map.Entry<Position, Piece> from, Map.Entry<Position, Piece> to) {
-        if (Move.moveToSameColor(from, to)) {
-            return false;
-        }
-        if (StraightMove.isStraight(from.getKey(), to.getKey())
-                && StraightMove.getDistance(from.getKey(), to.getKey()) == 1) {
-            return true;
-        }
-
-        if (DiagonalMove.isDiagonal(from.getKey(), to.getKey())
-                && DiagonalMove.getDistance(from.getKey(), to.getKey()) == 1) {
-            return true;
-        }
-        return false;
+    public boolean legalMove(Position from, Position to) {
+        return Move.getDistance(from, to) == 1;
     }
 }

@@ -2,12 +2,12 @@ package chess.engine.piece;
 
 import chess.PieceType;
 import chess.PlayerColor;
-import chess.engine.move.Move;
+import chess.engine.board.Position;
 
 /**
  * Classe permettant de définir une pièce du jeu
  */
-public abstract class Piece implements Move{
+public abstract class Piece {
     /**
      * Stock le type de la pièce
      */
@@ -47,6 +47,7 @@ public abstract class Piece implements Move{
         return this.color;
     }
 
+    //TODO supprimer si on utilise pas...
     /**
      * Compare la couleur de la pièce instanciée avec celle passée en paramètre
      *
@@ -57,6 +58,7 @@ public abstract class Piece implements Move{
         return color == other.color;
     }
 
+    //TODO supprimer si on utilise pas...
     /**
      * Permet de comprer les attributs de la pièce instanciée avec celle passée en paramètre
      *
@@ -85,4 +87,5 @@ public abstract class Piece implements Move{
         return color.toString() + " " + type.toString();
     }
 
+    public abstract boolean legalMove(Position from, Position to);
 }

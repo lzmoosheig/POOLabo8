@@ -2,6 +2,9 @@ package chess.engine;
 
 import chess.ChessController;
 import chess.ChessView;
+import chess.PieceType;
+import chess.PlayerColor;
+import chess.engine.move.Move;
 import chess.views.gui.GUIView;
 import chess.engine.board.*;
 import chess.engine.piece.*;
@@ -33,6 +36,11 @@ public class Controller implements ChessController {
     private final Board board;
 
     /**
+     * Définit si c'est le tour de blanc
+     */
+    private boolean isBlackTurn = false;
+
+    /**
      * Constructeur du Controller
      *
      * @param board La board que le Controller doit controller
@@ -53,6 +61,7 @@ public class Controller implements ChessController {
     @Override
     public void start(ChessView view) {
         if (view == null) throw new RuntimeException("The view can't be null");
+        isBlackTurn = false;
         this.view = view;
         initialize(board);
         view.startView();
@@ -63,7 +72,7 @@ public class Controller implements ChessController {
      */
     @Override
     public void newGame() {
-        start(new GUIView(this));
+            start(new GUIView(this));
     }
 
     /**
@@ -77,9 +86,10 @@ public class Controller implements ChessController {
      */
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
+
         captureEvent(fromX, fromY, toX, toY);
         if (from.getValue() == null) {
-            view.displayMessage("Aucune Pièce seléctionnée");
+            view.displayMessage("Aucune pièce seléctionnée");
             return false;
         }
 
@@ -88,6 +98,14 @@ public class Controller implements ChessController {
         }
         board.move(from, to);
         return true;
+    }
+
+    /**
+     * Définit si la pièce sélectionnée est celle du joueur courant
+     * @return true si c'est le cas
+     */
+    private boolean isCorrectPlayer() {
+        return from.getValue().getColor()  == (isBlackTurn? PlayerColor.WHITE : PlayerColor.BLACK);
     }
 
     /**
@@ -117,16 +135,96 @@ public class Controller implements ChessController {
      * Réalise le mouvement et effectue les actions nécessaires pour mettre à jour la board et la view.
      */
     private boolean executeMove() {
-        //TODO Manger une piece ici
-        //if (to.getValue() != null){/*Manger une pièce*/}
-        if (!from.getValue().legalMove(from, to)){
-            view.displayMessage("Mouvement interdit");
+        if (!canMove()){
             return false;
         }
         to.setValue(from.getValue());
         removePiece(from);
         putPiece(to);
+        isBlackTurn = !isBlackTurn;
         return true;
+    }
+
+    /**
+     * Définit si la pièce a le droit de bouger
+     * @return true si elle peut
+     */
+    private boolean canMove(){
+
+        if (pawnCanEat()) return true;
+
+        if (isCorrectPlayer()){
+            view.displayMessage("C'est à l'équipe adverse de jouer !");
+            return false;
+        }
+        if (isLegalMove()) {
+            view.displayMessage("Mouvement interdit");
+            return false;
+        }
+        if(isSameColor()){
+            view.displayMessage("La destination possède déjà une pièce");
+            return false;
+        }
+
+        if(from.getValue().getType() != PieceType.KNIGHT && collisionExist()){
+            view.displayMessage("Il y a une collision");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Permet de définir si un Pawn peut manger en diagonal
+     * @return true si il peut
+     */
+    private boolean pawnCanEat(){
+
+        if ( from.getValue() instanceof Pawn pawn
+                && to.getValue() != null
+                && Move.isDiagonal(from.getKey(), to.getKey())
+                && Move.getDistance(from.getKey(), to.getKey()) == 1 ){
+
+            return  pawn.moveAhead(from.getKey(), to.getKey())
+                    && to.getValue().getColor() != from.getValue().getColor();
+        }
+        return false;
+
+    }
+
+    /**
+     * Permet de définir si le mouvement est legal respectivement à la règle de déplacement de la pièce séléctionnée
+     * @return True si le mouvement est légal
+     */
+    private boolean isLegalMove() {
+        return !from.getValue().legalMove(from.getKey(), to.getKey());
+    }
+
+    /**
+     * Permet de définir si la destination possède est occupée par le même joueur
+     * @return True si le la destination est de la même couleur
+     */
+    private boolean isSameColor() {
+        if (to.getValue() == null) {
+            return false;
+        }
+        return from.getValue().getColor() == to.getValue().getColor();
+    }
+
+    /**
+     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision
+     * @return true si il y a une collision
+     */
+    private boolean collisionExist() {
+        Position[] way = Move.getWay(from.getKey(), to.getKey());
+        if (way == null) {
+            return false;
+        }
+        for (Position p : way){
+            if (board.getEntry(p).getValue() != null){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -152,7 +250,7 @@ public class Controller implements ChessController {
      * Permet de mettre à jour la view avec les pièces du board
      */
     private void putPieces() {
-        for (Entry<Position, Piece> entry : board.getPieces().entrySet()) {
+        for (Entry<Position, Piece> entry : board.getBoard().entrySet()) {
             putPiece(entry.getKey(), entry.getValue());
         }
     }
@@ -174,6 +272,5 @@ public class Controller implements ChessController {
     private void removePiece(Position position) {
         view.removePiece(position.getX(), position.getY());
     }
-
 
 }
