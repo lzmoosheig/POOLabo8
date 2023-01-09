@@ -424,4 +424,32 @@ public class Controller implements ChessController {
     private void removePiece(Position position) {
         view.removePiece(position.getX(), position.getY());
     }
+
+    public boolean canCastle(Piece king, Piece rook) {
+        // Vérifiez si les conditions nécessaires sont remplies
+        if (!king.getFirstMove() || !rook.getFirstMove()) {
+            return false;
+        }
+        // Vérifiez si il y a des pièces entre le roi et la tour
+        // Utiliser la méthode collisions
+        if(!collisionExist()){
+            return false;
+        }
+
+
+
+        // Vérifiez si le roi est en échec
+        if (isCheck()) {
+            return false;
+        }
+
+        // Vérifiez si les cases entre le roi et la tour sont menacées par les pièces adverses
+        if (isAttacked(kingPosition) || isAttacked(rookPosition)) {
+            return false;
+        }
+
+    private void Castle()
+    {
+
+    }
 }
