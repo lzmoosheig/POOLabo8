@@ -179,7 +179,7 @@ public class Controller implements ChessController {
         boardSnapShot = new Board(board);
         captureEvent(fromX, fromY, toX, toY);
 
-        if (isPat())
+        //if (isPat())
 
         if (!to.getKey().isValidPosition()){
             view.displayMessage("Position invalide");
