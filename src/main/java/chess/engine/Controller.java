@@ -9,6 +9,7 @@ import chess.engine.board.Position;
 import chess.engine.move.Move;
 import chess.engine.piece.*;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
@@ -26,6 +27,11 @@ public class Controller implements ChessController {
      */
 
     private int turn;
+
+    /**
+     * Permet de compter le nombre de tours sans mouvement de pion
+     */
+    private int cptPawn;
     private Entry<Position, Piece> from;
     /**
      * Lors d'un événement, stock la position clé-valeur du second click de l'utilisateur
@@ -173,6 +179,8 @@ public class Controller implements ChessController {
         boardSnapShot = new Board(board);
         captureEvent(fromX, fromY, toX, toY);
 
+        if (isPat())
+
         if (!to.getKey().isValidPosition()){
             view.displayMessage("Position invalide");
             return false;
@@ -197,7 +205,7 @@ public class Controller implements ChessController {
             return true;
         }
 
-        if (!canMove()){
+        if (!canMove(from, to)){
             return false;
         }
 
@@ -230,6 +238,29 @@ public class Controller implements ChessController {
 
         finishTurn();
         return true;
+    }
+
+    private boolean isPat() {
+        Position positions [] = new Position[board.SIZE * board.SIZE];
+        for (int i = 0; i < board.SIZE ; ++i ){
+            for (int j = 0; j < board.SIZE ; ++j){
+                int index = i * board.SIZE + j;
+                positions[index] = new Position(i, j);
+            }
+        }
+
+        for (Entry<Position, Piece> entry : board.getBoard().entrySet()){
+            Piece piece = entry.getValue();
+            Position initialPosition = entry.getKey();
+            for (Position position : positions){
+                Entry<Position, Piece> to = new AbstractMap.SimpleEntry<>(position, board.getPiece(position));
+                if (canMove(entry, to)){
+                    return false;
+                }
+            }
+        }
+        return true;
+
     }
 
     private boolean priseEnPassant(Position from, Position to) {
@@ -298,8 +329,8 @@ public class Controller implements ChessController {
      * Définit si la pièce sélectionnée est celle du joueur courant
      * @return true si c'est le cas
      */
-    private boolean isCorrectPlayer() {
-        return from.getValue().getColor()  == (isBlackTurn? PlayerColor.WHITE : PlayerColor.BLACK);
+    private boolean isCorrectPlayer(Piece selectedPiece) {
+        return selectedPiece.getColor()  == (isBlackTurn? PlayerColor.WHITE : PlayerColor.BLACK);
     }
 
     /**
@@ -340,24 +371,24 @@ public class Controller implements ChessController {
      * Définit si la pièce a le droit de bouger
      * @return true si elle peut
      */
-    private boolean canMove(){
+    private boolean canMove(Entry<Position, Piece> from, Entry<Position, Piece> to){
 
-        if (isCorrectPlayer()){
+        if (isCorrectPlayer(from.getValue())){
             view.displayMessage("C'est à l'équipe adverse de jouer !");
             return false;
         }
-        if (pawnCanEat()) return true;
+        if (pawnCanEat(from.getKey(), to.getKey())) return true;
 
-        if (isLegalMove()) {
+        if (isLegalMove(from, to.getKey())) {
             view.displayMessage("Mouvement interdit");
             return false;
         }
-        if(isSameColor()){
+        if(isSameColor(to.getKey())){
             view.displayMessage("La destination possède déjà une pièce");
             return false;
         }
 
-        if(collisionExist()){
+        if(collisionExist(from.getKey(), to.getKey())){
             view.displayMessage("Il y a une collision");
             return false;
         }
@@ -365,29 +396,41 @@ public class Controller implements ChessController {
     }
 
     /**
+     *
+     * Permet de définir si un Pawn peut manger en diagonal
+     *
+     * @param from la position de départ
+     * @param to La position de destination
+     * @return
+     */
+
+    private boolean pawnCanEat(Position from, Position to) {
+        if ( board.getPiece(from) instanceof Pawn pawn
+                && board.getPiece(to) != null
+                && Move.isDiagonal(from, to)
+                && Move.getDistance(from, to) == 1 ){
+
+            return  pawn.moveAhead(from, to)
+                    && board.getPiece(to).getColor() != board.getPiece(from).getColor();
+        }
+        return false;
+    }
+
+
+    /**
      * Permet de définir si un Pawn peut manger en diagonal
      * @return true si il peut
      */
     private boolean pawnCanEat(){
-
-        if ( from.getValue() instanceof Pawn pawn
-                && to.getValue() != null
-                && Move.isDiagonal(from.getKey(), to.getKey())
-                && Move.getDistance(from.getKey(), to.getKey()) == 1 ){
-
-            return  pawn.moveAhead(from.getKey(), to.getKey())
-                    && to.getValue().getColor() != from.getValue().getColor();
-        }
-        return false;
-
+        return pawnCanEat(from.getKey(), to.getKey());
     }
 
     /**
      * Permet de définir si le mouvement est legal respectivement à la règle de déplacement de la pièce sélectionnée
      * @return True si le mouvement est légal
      */
-    private boolean isLegalMove() {
-        return !from.getValue().legalMove(from.getKey(), to.getKey());
+    private boolean isLegalMove(Entry <Position, Piece> from, Position destination) {
+        return !from.getValue().legalMove(from.getKey(), destination);
     }
 
 
