@@ -42,6 +42,8 @@ public class Controller implements ChessController {
      */
     private Board boardSnapShot = new Board();
 
+    private Piece lastPiece = null;
+
     /**
      * Définit si c'est le tour de blanc
      */
@@ -183,9 +185,14 @@ public class Controller implements ChessController {
 
         if(canCastle(from.getKey(), to.getKey())){
             if (!castle(from.getKey(), to.getKey())){
-                view.displayMessage("Action impossible, Le roque de met le roi en échec");
+                view.displayMessage("Action impossible, Le roque se met le roi en échec");
                 return false;
             }
+            finishTurn();
+            return true;
+        }
+
+        if (priseEnPassant(from.getKey(), to.getKey())) {
             finishTurn();
             return true;
         }
@@ -193,7 +200,6 @@ public class Controller implements ChessController {
         if (!canMove()){
             return false;
         }
-
 
 
         if(from.getValue() instanceof PieceExtend pieceExtend){
@@ -214,6 +220,10 @@ public class Controller implements ChessController {
             return false;
         }
 
+        if(playerIsCheck(getKing(opponentPlayer()).getKey())) {
+            view.displayMessage(opponentPlayer().toString() + " player is currently check!");
+        }
+
         if(checkmate(opponentPlayer())) {
             view.displayMessage("Player "+ opponentPlayer() + " lose");
         }
@@ -222,9 +232,25 @@ public class Controller implements ChessController {
         return true;
     }
 
+    private boolean priseEnPassant(Position from, Position to) {
+        int playerCoef = currentPlayer() == PlayerColor.WHITE ? -1 : 1;
+        int epX = to.getX();
+        int epY = to.getY() + playerCoef;
+        Position epPosition = new Position(epX, epY);
+        if (board.getPiece(epPosition) instanceof Pawn epPawn
+                && lastPiece == epPawn
+                && epPawn.getColor() == opponentPlayer()){
+            board.remove(epPosition);
+            board.move(from, to);
+            return true;
+        }
+        return false;
+    }
+
     private void finishTurn(){
         turn++;
         isBlackTurn = !isBlackTurn;
+        lastPiece = from.getValue();
         refreshView();
     }
 
@@ -236,8 +262,8 @@ public class Controller implements ChessController {
                 new Rook(currentPlayer()),
                 new Knight(currentPlayer())};
 
-        ChessView.UserChoice userChoice = view.askUser("Promotion du Pion",
-                "Veuillez-choisir une pièce", userChoices);
+        ChessView.UserChoice userChoice = view.askUser("Pawn promotion",
+                "Please, choose a piece", userChoices);
 
         if (userChoice != null) {
             board.add(to.getKey(), (Piece) userChoice);
@@ -454,13 +480,17 @@ public class Controller implements ChessController {
     private void removePiece(Position position) {
         view.removePiece(position.getX(), position.getY());
     }
-
+    //TODO Attention au roque pas kingside mettre la position juste selon les regles
+    //TODO attention au roque quand c'est pas ton tour
+    //TODO checker les echec sur toutes les case du roque pas seuleument sur le roi
     public boolean canCastle(Position from, Position to){
         Piece first = board.getPiece(from);
         Piece second = board.getPiece(to);
-        if (first instanceof King king && second instanceof Rook rook
+        Rook rook = null; //get le rook en question
+        Position rookPosition = new Position(0,0); // get la position
+        if (first instanceof King king && second == null
             && king.getFirstMove() && rook.getFirstMove()
-            && !collisionExist(from, to) && !playerIsCheck(from)) return true;
+            && !collisionExist(from, rookPosition) && !playerIsCheck(from)) return true;
         return false;
     }
 

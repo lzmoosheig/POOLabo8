@@ -14,6 +14,18 @@ public class Pawn extends PieceExtend {
      *
      * @param color La couleur de la pièce
      */
+
+//    private int firstMoveTurn;
+
+//    public void setFirstMoveTurn(int firstMoveTurn) {
+//        if (!getFirstMove()) return;
+//        this.firstMoveTurn = firstMoveTurn;
+//    }
+
+//    public int getFirstMoveTurn() {
+//        return firstMoveTurn;
+//    }
+
     public Pawn(PlayerColor color) {
         super(color, PieceType.PAWN);
     }
