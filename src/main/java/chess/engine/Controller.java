@@ -193,7 +193,7 @@ public class Controller implements ChessController {
 
         if(canCastle(from.getKey(), to.getKey())){
             if (!castle(from.getKey(), to.getKey())){
-                view.displayMessage("Action impossible, Le roque se met le roi en échec");
+                view.displayMessage("Action impossible, Le roque met le roi en échec");
                 return false;
             }
             finishTurn();
@@ -523,14 +523,20 @@ public class Controller implements ChessController {
     private void removePiece(Position position) {
         view.removePiece(position.getX(), position.getY());
     }
+
     //TODO Attention au roque pas kingside mettre la position juste selon les regles
     //TODO attention au roque quand c'est pas ton tour
     //TODO checker les echec sur toutes les case du roque pas seuleument sur le roi
     public boolean canCastle(Position from, Position to){
         Piece first = board.getPiece(from);
         Piece second = board.getPiece(to);
+
+        // On doit définit si grand ou petit roque :
+        int rookX = (to.getX() < from.getX() ? 0 : 7);
+        int rookY = (currentPlayer() == PlayerColor.WHITE? 0 : 7);
         Rook rook = null; //get le rook en question
-        Position rookPosition = new Position(0,0); // get la position
+
+        Position rookPosition = new Position(rookX, rookY); // get la position
         if (first instanceof King king && second == null
             && king.getFirstMove() && rook.getFirstMove()
             && !collisionExist(from, rookPosition) && !playerIsCheck(from)) return true;
@@ -539,25 +545,26 @@ public class Controller implements ChessController {
 
     private boolean castle(Position from, Position to)
     {
-        boolean kingSideCasteling = to.getX() == 7;
+        // true si petit
+        boolean smallCastlingAsked = to.getX() == 6;
 
-        Position futurPosition = new Position(kingSideCasteling ? 6 : 1 , currentPlayer() == PlayerColor.WHITE ? 0 : 7);
+        Position futurPosition = new Position(smallCastlingAsked ? 6 : 1 , currentPlayer() == PlayerColor.WHITE ? 0 : 7);
         Board simulationBoard = new Board(board);
         simulationBoard.move(from, futurPosition);
 
         if (playerIsCheck(simulationBoard, futurPosition)){
             return false;
         }
-        castling(kingSideCasteling);
+        castling(smallCastlingAsked);
         return true;
 
     }
 
-    private void castling(boolean kingSideCasteling){
+    private void castling(boolean smallCastlingAsked){
         int y = currentPlayer() == PlayerColor.WHITE ? 0 : 7;
-        int kingX = kingSideCasteling ? 6 : 1;
-        int rookX = kingSideCasteling ? 5 : 2;
-        int rookXFrom = kingSideCasteling ? 7 : 0;
+        int kingX = smallCastlingAsked ? 6 : 1;
+        int rookX = smallCastlingAsked ? 5 : 2;
+        int rookXFrom = smallCastlingAsked ? 7 : 0;
 
         Position kingFrom = new Position(4, y);
         Position kingTo = new Position(kingX, y);
