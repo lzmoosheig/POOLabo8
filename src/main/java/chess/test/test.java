@@ -34,20 +34,18 @@ public class test {
     public void testCheckMate() {
         ControllerTest controller = new ControllerTest(new Board());
 
-        HashMap<Position, Piece> map = new HashMap<>();
-        Piece Knight = new Knight(PlayerColor.WHITE);
-        Piece KingB = new King(PlayerColor.BLACK);
-        Piece KingW = new King(PlayerColor.WHITE);
-        Piece Rook = new Rook(PlayerColor.WHITE);
+        HashMap<Position, Piece> Anastasia = new HashMap<>() {{
+            put(new Position(4,6), new Knight(PlayerColor.WHITE));
+            put(new Position(6,6), new Pawn(PlayerColor.BLACK));
+            put(new Position(7,6), new King(PlayerColor.BLACK));
+            put(new Position(7,4), new Rook(PlayerColor.WHITE));
+            put(new Position(0,0), new King(PlayerColor.WHITE));
+        }};
 
-        map.put(new Position(5,5), Knight);
-        map.put(new Position(7,7), KingB);
-        map.put(new Position(0,0), KingW);
-        map.put(new Position(7,6), Rook);
-
-        controller.initializeTest(map);
+        controller.initializeTest(Anastasia);
 
         assertTrue(controller.checkmateTest(PlayerColor.BLACK));
+        assertFalse(controller.checkmateTest(PlayerColor.WHITE));
     }
 
 

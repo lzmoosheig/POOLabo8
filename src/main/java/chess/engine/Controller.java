@@ -134,7 +134,7 @@ public class Controller implements ChessController {
             for (Entry<Position, Piece> entry : simulationBoard.getBoard().entrySet()){
                 if (entry.getValue().legalMove(entry.getKey(), validPosition)
                         && !collisionExist(entry.getKey(), validPosition)){
-                    break;
+                    return false;
                 }
             }
             if (!playerIsCheck(simulationBoard, validPosition)){
@@ -243,6 +243,8 @@ public class Controller implements ChessController {
 
         if(checkmate(opponentPlayer())) {
             message = "Player "+ opponentPlayer() + " lose";
+            finishTurn();
+            return true;
         }
 
         if(playerIsCheck(getKing(opponentPlayer()).getKey())) {
@@ -469,7 +471,7 @@ public class Controller implements ChessController {
 
     /**
      * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision.
-     * Bloque le pion s'il y a un adversaire devant lui et ignore le cavalier
+     * Bloque le pion s'il y a un adversaire devant lui, ignore le cavalier
      * @param from la position de départ
      * @param to La position de destination
      * @return true si il y a une collision
