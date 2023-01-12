@@ -528,16 +528,15 @@ public class Controller implements ChessController {
     //TODO attention au roque quand c'est pas ton tour
     //TODO checker les echec sur toutes les case du roque pas seuleument sur le roi
     public boolean canCastle(Position from, Position to){
-        Piece first = board.getPiece(from);
-        Piece second = board.getPiece(to);
-
-        // On doit définit si grand ou petit roque :
+        // On doit définit si grand ou petit roque (tour de droite ou de gauche)
         int rookX = (to.getX() < from.getX() ? 0 : 7);
         int rookY = (currentPlayer() == PlayerColor.WHITE? 0 : 7);
-        Rook rook = null; //get le rook en question
 
-        Position rookPosition = new Position(rookX, rookY); // get la position
-        if (first instanceof King king && second == null
+        Piece first = board.getPiece(from);
+        Position rookPosition = new Position(rookX, rookY); // Trouver la position de la tour
+        Piece second = board.getPiece(rookPosition);
+
+        if (first instanceof King king && second instanceof Rook rook
             && king.getFirstMove() && rook.getFirstMove()
             && !collisionExist(from, rookPosition) && !playerIsCheck(from)) return true;
         return false;
@@ -548,7 +547,7 @@ public class Controller implements ChessController {
         // true si petit
         boolean smallCastlingAsked = to.getX() == 6;
 
-        Position futurPosition = new Position(smallCastlingAsked ? 6 : 1 , currentPlayer() == PlayerColor.WHITE ? 0 : 7);
+        Position futurPosition = new Position(smallCastlingAsked ? 6 : 2 , currentPlayer() == PlayerColor.WHITE ? 0 : 7);
         Board simulationBoard = new Board(board);
         simulationBoard.move(from, futurPosition);
 
@@ -562,8 +561,8 @@ public class Controller implements ChessController {
 
     private void castling(boolean smallCastlingAsked){
         int y = currentPlayer() == PlayerColor.WHITE ? 0 : 7;
-        int kingX = smallCastlingAsked ? 6 : 1;
-        int rookX = smallCastlingAsked ? 5 : 2;
+        int kingX = smallCastlingAsked ? 6 : 2;
+        int rookX = smallCastlingAsked ? 5 : 3;
         int rookXFrom = smallCastlingAsked ? 7 : 0;
 
         Position kingFrom = new Position(4, y);

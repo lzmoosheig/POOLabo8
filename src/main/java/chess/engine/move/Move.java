@@ -1,28 +1,30 @@
 package chess.engine.move;
 import chess.engine.board.Position;
 
+/**
+ * Classe permettant de représenter les possibilités de déplacement des pièces
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
+ */
 public class Move {
 
     /**
      * Permet de définir si le mouvement est une diagonale
-     *
      * @param from La position de départ
      * @param to   La position de destination
      * @return true si le mouvement est une diagonale
      */
     public static boolean isDiagonal(Position from, Position to) {
-        return Move.getAbsDistX(from, to) == Move.getAbsDistY(from, to);
+        return getAbsDistX(from, to) == getAbsDistY(from, to);
     }
 
     /**
      * Permet de définir si le mouvement est orthogonal
-     *
      * @param from La position de départ
      * @param to   La position de destination
      * @return true si le mouvement est orthogonal
      */
     public static boolean isStraight(Position from, Position to) {
-        return (Move.getAbsDistX(from, to) == 0 || Move.getAbsDistY(from, to) == 0);
+        return getAbsDistX(from, to) == 0 || getAbsDistY(from, to) == 0;
     }
 
     /**
@@ -34,6 +36,7 @@ public class Move {
     public static int getAbsDistX(Position from, Position to){
         return Math.abs(getDistX(from , to));
     }
+
     /**
      * Permet de récupérer la distance sur X
      * @param from La position de départ
