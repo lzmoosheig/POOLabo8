@@ -35,11 +35,11 @@ public class Controller implements ChessController {
      * Permet de compter le nombre de tours sans mouvement de pion
      */
     private int cptPawn;
-    private Entry<Position, Piece> from;
+    private Position from;
     /**
      * Lors d'un événement, stock la position clé-valeur du second click de l'utilisateur
      */
-    private Entry<Position, Piece> to;
+    private Position to;
 
     /**
      * Stock la board que le Controlleur doit controller
@@ -186,20 +186,20 @@ public class Controller implements ChessController {
 
         //if (isPat())
 
-        if (!to.getKey().isValidPosition()){
+        if (!to.isValidPosition()){
             message = "Position invalide";
             displayMessage();
             return false;
         }
 
-        if (from.getValue() == null) {
+        if (from == null) {
             message = "Aucune pièce seléctionnée";
             displayMessage();
             return false;
         }
 
-        if(canCastle(from.getKey(), to.getKey())){
-            if (!castle(from.getKey(), to.getKey())){
+        if(canCastle(from, to)){
+            if (!castle(from, to)){
                 message = "Action impossible, Le roque se met le roi en échec";
                 displayMessage();
                 return false;
@@ -208,7 +208,7 @@ public class Controller implements ChessController {
             return true;
         }
 
-        if (priseEnPassant(from.getKey(), to.getKey())) {
+        if (priseEnPassant(from, to)) {
             finishTurn();
             return true;
         }
@@ -219,15 +219,13 @@ public class Controller implements ChessController {
         }
 
 
-        if(from.getValue() instanceof PieceExtend pieceExtend){
+        if(board.getPiece(from) instanceof PieceExtend pieceExtend){
             pieceExtend.setFirstMove();
         }
 
-        to.setValue(from.getValue());
+        board.move(from, to);
 
-        board.move(from.getKey(), to.getKey());
-
-        if(to.getKey().getY() == (isBlackTurn? 0 : 7) && from.getValue().getType() == PieceType.PAWN){
+        if(to.getY() == (isBlackTurn? 0 : 7) && board.getPiece(from).getType() == PieceType.PAWN){
             Promotion();
         }
 
@@ -264,8 +262,8 @@ public class Controller implements ChessController {
             Piece piece = entry.getValue();
             Position initialPosition = entry.getKey();
             for (Position position : positions){
-                Entry<Position, Piece> to = new AbstractMap.SimpleEntry<>(position, board.getPiece(position));
-                if (canMove(entry, to)){
+                Entry<Position, Piece> toEntry = new AbstractMap.SimpleEntry<>(position, board.getPiece(position));
+                if (canMove(entry.getKey(), toEntry.getKey())){
                     return false;
                 }
             }
@@ -293,7 +291,7 @@ public class Controller implements ChessController {
     private void finishTurn(){
         turn++;
         isBlackTurn = !isBlackTurn;
-        lastPiece = from.getValue();
+        lastPiece = board.getPiece(from);
         refreshView();
     }
 
@@ -309,7 +307,7 @@ public class Controller implements ChessController {
                 "Please, choose a piece", userChoices);
 
         if (userChoice != null) {
-            board.add(to.getKey(), (Piece) userChoice);
+            board.add(to, (Piece) userChoice);
         }
     }
 
@@ -354,8 +352,8 @@ public class Controller implements ChessController {
      * @param toY   la coordonnée sur Y du second click
      */
     private void captureEvent(int fromX, int fromY, int toX, int toY) {
-        from = board.getEntry(new Position(fromX, fromY));
-        to = board.getEntry(new Position(toX, toY));
+        from = new Position(fromX, fromY);
+        to = new Position(toX, toY);
     }
 
     /**
@@ -396,24 +394,24 @@ public class Controller implements ChessController {
      * Définit si la pièce a le droit de bouger
      * @return true si elle peut
      */
-    private boolean canMove(Entry<Position, Piece> from, Entry<Position, Piece> to){
+    private boolean canMove(Position from, Position to){
 
-        if (isCorrectPlayer(from.getValue())){
+        if (isCorrectPlayer(board.getPiece(from))){
             message = "C'est à l'équipe adverse de jouer !";
             return false;
         }
-        if (pawnCanEat(from.getKey(), to.getKey())) return true;
+        if (pawnCanEat(from, to)) return true;
 
-        if (isLegalMove(from, to.getKey())) {
+        if (isLegalMove(from, to)) {
             message = "Mouvement interdit";
             return false;
         }
-        if(isSameColor(to.getKey())){
+        if(isSameColor(to)){
             message = "La destination possède déjà une pièce";
             return false;
         }
 
-        if(collisionExist(from.getKey(), to.getKey())){
+        if(collisionExist(from, to)){
             message = "Il y a une collision";
             return false;
         }
@@ -441,21 +439,12 @@ public class Controller implements ChessController {
         return false;
     }
 
-
-    /**
-     * Permet de définir si un Pawn peut manger en diagonal
-     * @return true si il peut
-     */
-    private boolean pawnCanEat(){
-        return pawnCanEat(from.getKey(), to.getKey());
-    }
-
     /**
      * Permet de définir si le mouvement est legal respectivement à la règle de déplacement de la pièce sélectionnée
      * @return True si le mouvement est légal
      */
-    private boolean isLegalMove(Entry <Position, Piece> from, Position destination) {
-        return !from.getValue().legalMove(from.getKey(), destination);
+    private boolean isLegalMove(Position from, Position destination) {
+        return !board.getPiece(from).legalMove(from, destination);
     }
 
 
@@ -464,14 +453,14 @@ public class Controller implements ChessController {
         if (piece == null) {
             return false;
         }
-        return from.getValue().getColor() == piece.getColor();
+        return board.getPiece(from).getColor() == piece.getColor();
     }
     /**
      * Permet de définir si la destination possède est occupée par le même joueur
      * @return True si le la destination est de la même couleur
      */
     private boolean isSameColor() {
-       return isSameColor(to.getKey());
+       return isSameColor(to);
     }
 
     /**
@@ -499,7 +488,7 @@ public class Controller implements ChessController {
      * @return true si il y a une collision
      */
     private boolean collisionExist(){
-        return collisionExist(from.getKey(), to.getKey());
+        return collisionExist(from, to);
     }
 
     /**

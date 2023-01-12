@@ -51,12 +51,8 @@ public class Pawn extends PieceExtend {
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-        boolean isLegal = Move.isStraight(from, to)
+        return Move.isStraight(from, to)
                 && moveAhead(from, to)
                 && Move.getDistance(from, to) <= (firstMove ? 2 : 1);
-        if (!isLegal){
-            return false;
-        }
-        return true;
     }
 }
