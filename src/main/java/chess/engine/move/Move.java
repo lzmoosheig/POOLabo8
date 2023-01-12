@@ -1,4 +1,5 @@
 package chess.engine.move;
+import chess.PlayerColor;
 import chess.engine.board.Position;
 
 /**
@@ -6,6 +7,10 @@ import chess.engine.board.Position;
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Move {
+
+    public static int getCoef(PlayerColor playerColor){
+        return playerColor == PlayerColor.WHITE ? 1 : -1;
+    }
 
     /**
      * Permet de définir si le mouvement est une diagonale

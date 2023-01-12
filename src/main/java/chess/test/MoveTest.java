@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 
 public class MoveTest {
 
-    ControllerTest controller = new ControllerTest(new Board());
+    ControllerTest controller = new ControllerTest();
 
     @Test
     public void testPawnMovement() {

@@ -19,9 +19,6 @@ import static org.junit.Assert.*;
 
 public class test {
 
-    // Used for all test
-    ControllerTest controller = new ControllerTest(new Board());
-
     /*
     * - Mouvement de chacune des pièces
   - Pion (uniquement en avant, première fois de 2 et ensuite de 1)
@@ -36,17 +33,28 @@ public class test {
 
     @Test
     public void testCheckMate() {
-        ControllerTest controller = new ControllerTest(new Board());
-
-        HashMap<Position, Piece> Anastasia = new HashMap<>() {{
+        ControllerTest controller = new ControllerTest();
+        //Mise en situation avec Anastasia's Mate
+        HashMap<Position, Piece> hashMap = new HashMap<>() {{
             put(new Position(4,6), new Knight(PlayerColor.WHITE));
             put(new Position(6,6), new Pawn(PlayerColor.BLACK));
             put(new Position(7,6), new King(PlayerColor.BLACK));
             put(new Position(7,4), new Rook(PlayerColor.WHITE));
             put(new Position(0,0), new King(PlayerColor.WHITE));
         }};
+        controller.initializeTest(hashMap);
 
-        controller.initializeTest(Anastasia);
+        assertTrue(controller.checkmateTest(PlayerColor.BLACK));
+        assertFalse(controller.checkmateTest(PlayerColor.WHITE));
+
+        //Mise en situation avec Anderssen's mate
+        hashMap = new HashMap<>() {{
+            put(new Position(6,6), new Pawn(PlayerColor.WHITE));
+            put(new Position(6,7), new King(PlayerColor.BLACK));
+            put(new Position(7,7), new Rook(PlayerColor.WHITE));
+            put(new Position(5,5), new King(PlayerColor.WHITE));
+        }};
+        controller.initializeTest(hashMap);
 
         assertTrue(controller.checkmateTest(PlayerColor.BLACK));
         assertFalse(controller.checkmateTest(PlayerColor.WHITE));

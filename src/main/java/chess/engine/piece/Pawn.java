@@ -38,8 +38,8 @@ public class Pawn extends PieceExtend {
      * @return true si le mouvement est vertical
      */
     public boolean moveAhead(Position from, Position to) {
-        int coef = getColor() == PlayerColor.BLACK ? -1 : 1;
-        return ((to.getY() - from.getY()) * coef > 0);
+        int coef = Move.getCoef(getColor());
+        return (to.getY() - from.getY()) * coef > 0 && to.getX()-from.getX() == 0;
     }
 
     /**

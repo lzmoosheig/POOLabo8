@@ -44,7 +44,7 @@ public class Controller implements ChessController {
     /**
      * Stock la board que le Controlleur doit controller
      */
-    private Board board;
+    private Board board = new Board();
 
     /**
      * Stock un snapshot de la board afin de rétablir un état antérieur
@@ -57,17 +57,11 @@ public class Controller implements ChessController {
      * Définit si c'est le tour de blanc
      */
     private boolean isBlackTurn = false;
+
     /**
      * Constructeur du Controller
-     *
-     * @param board La board que le Controller doit controller
      */
-    public Controller(Board board) {
-        if (board == null) {
-            throw new RuntimeException("board can't be null");
-        }
-        this.board = board;
-    }
+    public Controller() {}
 
     private boolean playerIsCheck(Position positionOfKingToCheck){
         return playerIsCheck(board, positionOfKingToCheck);
@@ -97,8 +91,13 @@ public class Controller implements ChessController {
         return null;
     }
 
+    private boolean isCheck(Board board, Position from, Position to){
+
+        return (board.getPiece(from).legalMove(from, to) || pawnCanEat(from, to)) && !collisionExist(from, to);
+    }
+
     private boolean isCheck(Position from, Position to){
-        return board.getPiece(from).legalMove(from, to) && !collisionExist(from, to);
+        return isCheck(board, from, to);
     }
 
     private boolean checkmate(PlayerColor player){
@@ -109,6 +108,7 @@ public class Controller implements ChessController {
         int[] sequencesY = {-1, 0, 1, -1, 1, -1, 0, 1};
 
         ArrayList<Position> validPositions = new ArrayList<>();
+        boardSnapShot = new Board(board);
 
         for (int i = 0; i < 8; i++) {
             int futurX = kingPosition.getX() + sequencesX[i];
@@ -118,28 +118,32 @@ public class Controller implements ChessController {
 
             if (futurPosition.isValidPosition() &&
                     (pieceOnFuturPosition == null || pieceOnFuturPosition.getColor() != player)){
-                Board simulationBoard = new Board(board);
-                simulationBoard.move(kingPosition, futurPosition);
+                board.move(kingPosition, futurPosition);
                 validPositions.add(futurPosition);
             }
+            board = new Board(boardSnapShot);
         }
 
         if (validPositions.size() == 0) {
             return false;
         }
 
+        board = new Board(boardSnapShot);
+
         for (Position validPosition : validPositions){
-            Board simulationBoard = new Board(board);
-            simulationBoard.move(kingPosition, validPosition);
-            for (Entry<Position, Piece> entry : simulationBoard.getBoard().entrySet()){
-                if (entry.getValue().legalMove(entry.getKey(), validPosition)
-                        && !collisionExist(entry.getKey(), validPosition)){
-                    return false;
-                }
-            }
-            if (!playerIsCheck(simulationBoard, validPosition)){
+            board.move(kingPosition, validPosition);
+//            for (Entry<Position, Piece> entry : simulationBoard.getBoard().entrySet()){
+//                Piece attacant = entry.getValue();
+//                if (!attacant.legalMove(entry.getKey(), validPosition)
+//                        || collisionExist(entry.getKey(), validPosition)){
+//                    return false;
+//                }
+//            }
+            if (!playerIsCheck(board, validPosition)){
+                board = new Board(boardSnapShot);
                 return false;
             }
+            board = new Board(boardSnapShot);
         }
         return true;
     }
@@ -281,9 +285,9 @@ public class Controller implements ChessController {
 
     private boolean priseEnPassant(Position from, Position to) {
         if (currentPlayer() != board.getPiece(from).getColor()) return false;
-        int playerCoef = currentPlayer() == PlayerColor.WHITE ? -1 : 1;
+        int coef = Move.getCoef(currentPlayer());
         int epX = to.getX();
-        int epY = to.getY() + playerCoef;
+        int epY = to.getY() + coef;
         Position epPosition = new Position(epX, epY);
         if (board.getPiece(epPosition) instanceof Pawn epPawn
                 && lastPiece == epPawn
@@ -372,6 +376,7 @@ public class Controller implements ChessController {
     }
 
     protected void initializeTest(HashMap<Position, Piece> hashMap) {
+        board = new Board();
        for (Entry<Position, Piece> entry : hashMap.entrySet()){
            board.add(entry.getKey(), entry.getValue());
        }
@@ -435,13 +440,16 @@ public class Controller implements ChessController {
      */
 
     private boolean pawnCanEat(Position from, Position to) {
+        if ((from.getY() - to.getY()) * Move.getCoef(board.getPiece(from).getColor()) > 0) return false;
         if ( board.getPiece(from) instanceof Pawn pawn
                 && board.getPiece(to) != null
                 && Move.isDiagonal(from, to)
                 && Move.getDistance(from, to) == 1 ){
 
-            return  pawn.moveAhead(from, to)
-                    && board.getPiece(to).getColor() != board.getPiece(from).getColor();
+            return  board.getPiece(to).getColor() != board.getPiece(from).getColor();
+
+//            return  pawn.moveAhead(from, to)
+//                    && board.getPiece(to).getColor() != board.getPiece(from).getColor();
         }
         return false;
     }
@@ -480,9 +488,10 @@ public class Controller implements ChessController {
      * Bloque le pion s'il y a un adversaire devant lui, ignore le cavalier
      * @param from la position de départ
      * @param to La position de destination
+     * @param board La board sur laquelle il faut tester la collision
      * @return true si il y a une collision
      */
-    private boolean collisionExist(Position from, Position to) {
+    private boolean collisionExist(Board board, Position from, Position to) {
         if (board.getPiece(from).getType() == PieceType.KNIGHT) return false;
         if (board.getPiece(from) instanceof Pawn pawn
                 && pawn.moveAhead(from, to)
@@ -498,6 +507,10 @@ public class Controller implements ChessController {
             }
         }
         return false;
+    }
+
+    private boolean collisionExist(Position from, Position to){
+        return collisionExist(board, from, to);
     }
 
     /**
