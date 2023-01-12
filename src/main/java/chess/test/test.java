@@ -19,9 +19,9 @@ import static org.junit.Assert.*;
 public class test {
 
     /*
-    * - Mouvement de chacune des pièce
+    * - Mouvement de chacune des pièces
   - Pion (uniquement en avant, première fois de 2 et ensuite de 1)
-- Détéction de l'échec
+- Détection de l'échec
 - Roque (grand et petit)
   - Egalement si la tour ou le roi on deja bougé avant
 - Prise en passant

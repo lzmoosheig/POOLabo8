@@ -424,7 +424,6 @@ public class Controller implements ChessController {
     }
 
     /**
-     *
      * Permet de définir si un Pawn peut manger en diagonal
      *
      * @param from la position de départ
@@ -469,13 +468,18 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision
-     * @from la position de départ
-     * @to La position de destination
+     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision.
+     * Bloque le pion s'il y a un adversaire devant lui et ignore le cavalier
+     * @param from la position de départ
+     * @param to La position de destination
      * @return true si il y a une collision
      */
     private boolean collisionExist(Position from, Position to) {
         if (board.getPiece(from).getType() == PieceType.KNIGHT) return false;
+        if (board.getPiece(from) instanceof Pawn pawn
+                && pawn.moveAhead(from, to)
+                && board.getPiece(to) != null) return true;
+
         Position[] way = Move.getWay(from, to);
         if (way == null) {
             return false;
