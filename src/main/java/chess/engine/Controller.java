@@ -164,6 +164,7 @@ public class Controller implements ChessController {
         if (view == null) throw new RuntimeException("The view can't be null");
         isBlackTurn = false;
         initialize();
+        refreshView();
     }
 
     /**
@@ -360,7 +361,6 @@ public class Controller implements ChessController {
      */
     private void initialize() {
         board.initialize();
-        putPieces();
     }
     private void refreshView(){
         displayMessage();
