@@ -134,7 +134,7 @@ public class Controller implements ChessController {
             for (Entry<Position, Piece> entry : simulationBoard.getBoard().entrySet()){
                 if (entry.getValue().legalMove(entry.getKey(), validPosition)
                         && !collisionExist(entry.getKey(), validPosition)){
-                    return false;
+                    break;
                 }
             }
             if (!playerIsCheck(simulationBoard, validPosition)){
@@ -238,13 +238,14 @@ public class Controller implements ChessController {
             return false;
         }
 
+        if(checkmate(opponentPlayer())) {
+            message = "Player "+ opponentPlayer() + " lose";
+        }
+
         if(playerIsCheck(getKing(opponentPlayer()).getKey())) {
             message = opponentPlayer().toString() + " player is currently check!";
         }
 
-        if(checkmate(opponentPlayer())) {
-            message = "Player "+ opponentPlayer() + " lose";
-        }
 
         finishTurn();
         return true;
@@ -274,6 +275,7 @@ public class Controller implements ChessController {
     }
 
     private boolean priseEnPassant(Position from, Position to) {
+        if (currentPlayer() != board.getPiece(from).getColor()) return false;
         int playerCoef = currentPlayer() == PlayerColor.WHITE ? -1 : 1;
         int epX = to.getX();
         int epY = to.getY() + playerCoef;
