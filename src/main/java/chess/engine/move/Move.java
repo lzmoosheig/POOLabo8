@@ -91,12 +91,17 @@ public class Move {
      */
     public static Position[] getWay(Position from, Position to){
         int dist = getDistance(from, to);
+        // Si on se déplace que d'une case pas de chemin
         if(dist == 1){
             return null;
         }
+
         int xCoef = getDistX(from, to) < 0 ? -1 : 1 ;
         int yCoef = getDistY(from, to) < 0 ? -1 : 1 ;
+
         Position[] way = new Position[dist - 1];
+
+        // Si le chemin est en diagonale
         if (isDiagonal(from, to)){
             for (int i = 1; i < getAbsDistX(from, to); ++i){
                 int x = from.getX() + i * xCoef;
@@ -105,13 +110,16 @@ public class Move {
             }
             return way;
         }
+        // Si le chemin est en ligne droite
         if (isStraight(from, to)){
+            // Si il reste sur ligne verticale
             if(getDistX(from, to) == 0){
                 for (int i = 1 ; i < getAbsDistY(from, to) ; ++i){
                     int y = from.getY() + i * yCoef;
                     way[i-1] = new Position(from.getX(),y) ;
                 }
             }
+            // Si il reste sur la ligne verticale
             if(getDistY(from, to) == 0){
                 for (int i = 1; i < getAbsDistX(from, to) ; ++i){
                     int x = from.getX() + i * xCoef;
