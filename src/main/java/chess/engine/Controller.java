@@ -73,6 +73,10 @@ public class Controller implements ChessController {
         return playerIsCheck(board, positionOfKingToCheck);
     }
 
+    protected boolean playerIsCheckTest(Position positionOfKingToCheck) {
+        return playerIsCheck(positionOfKingToCheck);
+    }
+
     private boolean playerIsCheck(Board board, Position positionOfKingToCheck){
         Piece kingToCheck = board.getPiece(positionOfKingToCheck);
         for(Entry<Position, Piece> entry : board.getBoard().entrySet()){
@@ -99,6 +103,11 @@ public class Controller implements ChessController {
 
     private boolean isCheck(Position from, Position to){
         return board.getPiece(from).legalMove(from, to) && !collisionExist(from, to);
+    }
+
+    protected boolean isCheckTest(Position from, Position to)
+    {
+        return isCheck(from,to);
     }
 
     private boolean checkmate(PlayerColor player){
@@ -276,7 +285,11 @@ public class Controller implements ChessController {
             }
         }
         return true;
+    }
 
+    protected boolean isPatTest()
+    {
+        return isPat();
     }
 
     private boolean priseEnPassant(Position from, Position to) {
@@ -293,6 +306,11 @@ public class Controller implements ChessController {
             return true;
         }
         return false;
+    }
+
+    protected boolean priseEnPassantTest(Position from, Position to)
+    {
+        return priseEnPassant(from, to);
     }
 
     private void finishTurn(){
@@ -425,6 +443,15 @@ public class Controller implements ChessController {
         return true;
     }
 
+    protected boolean canMoveTest(Position from, Position to)
+    {
+        return canMove(from,to);
+    }
+
+
+
+
+
 
     /**
      * Permet de définir si un Pawn peut manger en diagonal
@@ -453,12 +480,6 @@ public class Controller implements ChessController {
     private boolean isLegalMove(Position from, Position destination) {
         return !board.getPiece(from).legalMove(from, destination);
     }
-
-    protected boolean isLegalMoveTest(Position from, Position destination)
-    {
-        return isLegalMove(from,destination);
-    }
-
 
     private boolean isSameColor(Position to){
         Piece piece = board.getPiece(to);
@@ -498,6 +519,11 @@ public class Controller implements ChessController {
             }
         }
         return false;
+    }
+
+    protected boolean collisionExistTest(Position from, Position to)
+    {
+        return collisionExist(from, to);
     }
 
     /**
