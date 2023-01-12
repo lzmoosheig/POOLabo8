@@ -11,6 +11,7 @@ import chess.engine.piece.*;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
@@ -361,6 +362,12 @@ public class Controller implements ChessController {
      */
     private void initialize() {
         board.initialize();
+    }
+
+    protected void initializeTest(HashMap<Position, Piece> hashMap) {
+       for (Entry<Position, Piece> entry : hashMap.entrySet()){
+           board.add(entry.getKey(), entry.getValue());
+       };
     }
     private void refreshView(){
         displayMessage();
