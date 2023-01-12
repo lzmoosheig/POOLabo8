@@ -5,24 +5,17 @@ import chess.PlayerColor;
 import java.util.Objects;
 
 /**
- * Classe permettant de définir une position sur un échiquier
+ * Classe permettant de représenter une positin sur l'échiquier
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Position {
-    /**
-     * Stocke la coordonnée x
-     */
     private int x;
-
-    /**
-     * Stocke la coordonnée y
-     */
     private int y;
 
     /**
-     * Constructeur de position
-     *
-     * @param x La coordonnée x
-     * @param y La coordonnée y
+     * Constructeur de la classe position
+     * @param x La coordonnée x (largeur de l'échiquier)
+     * @param y La coordonnée y (hauteur de l'échiquier)
      */
     public Position(int x, int y) {
         this.x = x;
@@ -30,8 +23,7 @@ public class Position {
     }
 
     /**
-     * Recuperation de la coordonnée x
-     *
+     * Getter de la coordonnée X
      * @return la coordonnée x
      */
     public int getX() {
@@ -39,8 +31,7 @@ public class Position {
     }
 
     /**
-     * Recuperation de la coordonnée y
-     *
+     * Getter de la coordonnée Y
      * @return la coordonnée y
      */
     public int getY() {
@@ -48,8 +39,7 @@ public class Position {
     }
 
     /**
-     * Implementation de la methode hashCode
-     *
+     * Implementation de la méthode hashCode
      * @return le hashCode de l'objet instancié
      */
     @Override
@@ -58,8 +48,7 @@ public class Position {
     }
 
     /**
-     * Permet de comprer les attributs de la position instanciée avec celle passée en paramètre
-     *
+     * Permet de comparer les attributs de la position instanciée avec celle passée en paramètre
      * @param other La position à comparer
      * @return true si les attributs sont identiques
      */
@@ -75,7 +64,13 @@ public class Position {
         return false;
     }
 
-    public static Position[] InitialPosition(PieceType type, PlayerColor color) {
+    /**
+     * Permet de connaître toutes les positions d'un type de pièce d'une couleur donnée
+     * @param type de(s) pièce(s) dont on veut connaître la/les position(s)
+     * @param color de(s) pièce(s) dont on veut connaître la/les position(s)
+     * @return un tableau de Position de toutes les pièces du type et de la couleur
+     */
+    public static Position[] initialPosition(PieceType type, PlayerColor color) {
         int pawnTeamIndex = color == PlayerColor.BLACK ? 6 : 1;
         int teamIndex = color == PlayerColor.BLACK ? 7 : 0;
         switch (type) {
@@ -108,9 +103,18 @@ public class Position {
         }
     }
 
+    /**
+     * Permet de savoir si une position se situe bien sur l'échiquier
+     * @return vrai si la position est sur l'échiquier
+     */
     public boolean isValidPosition(){
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
+
+    /**
+     * Réimplémentation de la méthode toString()
+     * @return position dans le format "x : <x> - y : <y>"
+     */
     @Override public String toString(){
         return "x : " + x + " - y : " + y;
     }
