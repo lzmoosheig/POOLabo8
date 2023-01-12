@@ -144,6 +144,11 @@ public class Controller implements ChessController {
         return true;
     }
 
+    protected boolean checkmateTest(PlayerColor player){
+
+        return checkmate(player);
+    }
+
     /**
      * Démmare le jeu
      *
@@ -367,7 +372,7 @@ public class Controller implements ChessController {
     protected void initializeTest(HashMap<Position, Piece> hashMap) {
        for (Entry<Position, Piece> entry : hashMap.entrySet()){
            board.add(entry.getKey(), entry.getValue());
-       };
+       }
     }
     private void refreshView(){
         displayMessage();
@@ -586,5 +591,10 @@ public class Controller implements ChessController {
         board.add(rookTo, board.getPiece(rookFrom));
         board.remove(kingFrom);
         board.remove(rookFrom);
+    }
+
+    public int getTurn()
+    {
+        return turn;
     }
 }
