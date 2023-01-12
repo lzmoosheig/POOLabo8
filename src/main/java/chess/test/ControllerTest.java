@@ -31,13 +31,29 @@ public class ControllerTest extends Controller {
         return super.checkmateTest(player);
     }
 
-    /*public boolean canMoveTest(Position from, Position to)
+    public boolean collisionExistTest(Position from, Position to)
+    {
+        return super.collisionExistTest(from,to);
+    }
+
+    public boolean playerIsCheckTest(Position kingPos)
+    {
+        return super.playerIsCheckTest(kingPos);
+    }
+
+    public boolean priseEnPassantTest(Position from, Position to)
+    {
+        return super.priseEnPassantTest(from, to);
+    }
+
+    public boolean canMoveTest(Position from, Position to)
     {
         return super.canMoveTest(from,to);
-    }*/
-
-    public boolean isLegalMoveTest(Position from, Position destination)
-    {
-        return super.isLegalMoveTest(from,destination);
     }
+
+    public boolean isPatTest()
+    {
+        return super.isPatTest();
+    }
+
 }

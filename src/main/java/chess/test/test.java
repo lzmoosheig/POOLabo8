@@ -62,6 +62,93 @@ public class test {
 
 
 
+    @Test
+    public void testKingInCheck() {
+        ControllerTest controller = new ControllerTest(new Board());
+
+        Position kingPos = new Position(4,4);
+        Position queenPos = new Position(7,7);
+
+        HashMap<Position, Piece> initMap = new HashMap<>() {{
+            put(kingPos, new King(PlayerColor.WHITE));
+            put(queenPos, new Queen(PlayerColor.BLACK));
+        }};
+
+        controller.initializeTest(initMap);
+
+        // Vérifie que le roi est en échec
+        assertTrue(controller.playerIsCheckTest(kingPos));
+
+        // Vérifie que la reine ne peut pas mettre le roi en échec
+        //assertFalse(controller.canPutInCheck(board, 4, 4));
+    }
+
+
+    @Test
+    public void testPawnEnPassant() {
+
+        // TODO: Vérifier comment on pourrait déplacer une pièce simplement (CE TEST N'EST PAS ENCORE FINI !)
+        ControllerTest controller = new ControllerTest(new Board());
+
+        Piece pawn1 = new Pawn(PlayerColor.BLACK);
+        Piece pawn2 = new Pawn(PlayerColor.WHITE);
+
+        Position pawn1Pos = new Position(3, 4);
+        Position pawn2Pos = new Position(4, 5);
+
+        HashMap<Position, Piece> initMap = new HashMap<>() {{
+            put(pawn1Pos, new King(PlayerColor.WHITE));
+            put(pawn2Pos, new Queen(PlayerColor.BLACK));
+        }};
+
+        controller.initializeTest(initMap);
+
+        // Vérifie que le pion ne peut pas prendre en passant s'il n'a pas avancé de deux cases
+        assertFalse(controller.priseEnPassantTest(pawn1Pos, new Position(3, 3)));
+
+        // Fait avancer le pion de deux cases
+        controller.move(3, 4, 3, 6);
+
+        // Vérifie que le pion peut prendre en passant
+        assertTrue(controller.priseEnPassantTest(pawn1Pos, new Position(4, 5)));
+
+        // Vérifie que la prise en passant ne peut pas être effectuée si le pion a déjà bougé
+        assertFalse(controller.priseEnPassantTest(pawn1Pos, new Position(4, 5)));
+        controller.move(3, 6, 4, 5);
+        assertFalse(controller.priseEnPassantTest(pawn1Pos, new Position(4, 5)));
+    }
+
+    @Test
+    public void testStaleMate() {
+
+        ControllerTest controller = new ControllerTest(new Board());
+
+        Piece king = new King(PlayerColor.BLACK);
+        Piece rook = new Rook(PlayerColor.WHITE);
+
+        Position kingPos = new Position(4, 4);
+        Position rookPos = new Position(4, 0);
+
+        HashMap<Position, Piece> initMap = new HashMap<>() {{
+            put(kingPos, king);
+            put(rookPos, rook);
+        }};
+
+        controller.initializeTest(initMap);
+
+        // Vérifie que le roi n'est pas en échec
+        assertFalse(controller.playerIsCheckTest(kingPos));
+
+        // Vérifie que le roi ne peut pas bouger
+        assertFalse(controller.canMoveTest(new Position(4,4), new Position(3,4)));
+        assertFalse(controller.canMoveTest(new Position(4,4), new Position(4,3)));
+
+        // Vérifie que le pat est détecté
+        assertTrue(controller.isPatTest());
+    }
+
+
+
 
 
     //

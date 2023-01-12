@@ -60,11 +60,16 @@ public class Controller implements ChessController {
 
     /**
      * Constructeur du Controller
+     *
      */
     public Controller() {}
 
     private boolean playerIsCheck(Position positionOfKingToCheck){
         return playerIsCheck(board, positionOfKingToCheck);
+    }
+
+    protected boolean playerIsCheckTest(Position positionOfKingToCheck) {
+        return playerIsCheck(positionOfKingToCheck);
     }
 
     private boolean playerIsCheck(Board board, Position positionOfKingToCheck){
@@ -98,6 +103,11 @@ public class Controller implements ChessController {
 
     private boolean isCheck(Position from, Position to){
         return isCheck(board, from, to);
+    }
+
+    protected boolean isCheckTest(Position from, Position to)
+    {
+        return isCheck(from,to);
     }
 
     private boolean checkmate(PlayerColor player){
@@ -261,26 +271,30 @@ public class Controller implements ChessController {
     }
 
     private boolean isPat() {
-        Position positions [] = new Position[board.SIZE * board.SIZE];
-        for (int i = 0; i < board.SIZE ; ++i ){
-            for (int j = 0; j < board.SIZE ; ++j){
+        Position positions[] = new Position[board.SIZE * board.SIZE];
+        for (int i = 0; i < board.SIZE; ++i) {
+            for (int j = 0; j < board.SIZE; ++j) {
                 int index = i * board.SIZE + j;
                 positions[index] = new Position(i, j);
             }
         }
 
-        for (Entry<Position, Piece> entry : board.getBoard().entrySet()){
+        for (Entry<Position, Piece> entry : board.getBoard().entrySet()) {
             Piece piece = entry.getValue();
             Position initialPosition = entry.getKey();
-            for (Position position : positions){
+            for (Position position : positions) {
                 Entry<Position, Piece> toEntry = new AbstractMap.SimpleEntry<>(position, board.getPiece(position));
-                if (canMove(entry.getKey(), toEntry.getKey())){
+                if (canMove(entry.getKey(), toEntry.getKey())) {
                     return false;
                 }
             }
         }
         return true;
+    }
 
+    protected boolean isPatTest()
+    {
+        return isPat();
     }
 
     private boolean priseEnPassant(Position from, Position to) {
@@ -297,6 +311,11 @@ public class Controller implements ChessController {
             return true;
         }
         return false;
+    }
+
+    protected boolean priseEnPassantTest(Position from, Position to)
+    {
+        return priseEnPassant(from, to);
     }
 
     private void finishTurn(){
@@ -430,6 +449,15 @@ public class Controller implements ChessController {
         return true;
     }
 
+    protected boolean canMoveTest(Position from, Position to)
+    {
+        return canMove(from,to);
+    }
+
+
+
+
+
 
     /**
      * Permet de définir si un Pawn peut manger en diagonal
@@ -447,9 +475,6 @@ public class Controller implements ChessController {
                 && Move.getDistance(from, to) == 1 ){
 
             return  board.getPiece(to).getColor() != board.getPiece(from).getColor();
-
-//            return  pawn.moveAhead(from, to)
-//                    && board.getPiece(to).getColor() != board.getPiece(from).getColor();
         }
         return false;
     }
@@ -461,12 +486,6 @@ public class Controller implements ChessController {
     private boolean isLegalMove(Position from, Position destination) {
         return !board.getPiece(from).legalMove(from, destination);
     }
-
-    protected boolean isLegalMoveTest(Position from, Position destination)
-    {
-        return isLegalMove(from,destination);
-    }
-
 
     private boolean isSameColor(Position to){
         Piece piece = board.getPiece(to);
@@ -511,6 +530,11 @@ public class Controller implements ChessController {
 
     private boolean collisionExist(Position from, Position to){
         return collisionExist(board, from, to);
+    }
+
+    protected boolean collisionExistTest(Position from, Position to)
+    {
+        return collisionExist(from, to);
     }
 
     /**
