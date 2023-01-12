@@ -28,6 +28,8 @@ public class Controller implements ChessController {
 
     private int turn;
 
+    private String message;
+
     /**
      * Permet de compter le nombre de tours sans mouvement de pion
      */
@@ -177,23 +179,30 @@ public class Controller implements ChessController {
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
         boardSnapShot = new Board(board);
+
         captureEvent(fromX, fromY, toX, toY);
 
-        //if (isPat())
+        if (isPat()){
+            int i = 0;
+        }
+        message = "";
 
         if (!to.getKey().isValidPosition()){
-            view.displayMessage("Position invalide");
+            message = "Position invalide";
+            displayMessage();
             return false;
         }
 
         if (from.getValue() == null) {
-            view.displayMessage("Aucune pièce seléctionnée");
+            message = "Aucune pièce seléctionnée";
+            displayMessage();
             return false;
         }
 
         if(canCastle(from.getKey(), to.getKey())){
             if (!castle(from.getKey(), to.getKey())){
-                view.displayMessage("Action impossible, Le roque se met le roi en échec");
+                message = "Action impossible, Le roque se met le roi en échec";
+                displayMessage();
                 return false;
             }
             finishTurn();
@@ -206,6 +215,7 @@ public class Controller implements ChessController {
         }
 
         if (!canMove(from, to)){
+            displayMessage();
             return false;
         }
 
@@ -223,17 +233,18 @@ public class Controller implements ChessController {
         }
 
         if(playerIsCheck(getKing(currentPlayer()).getKey())) {
-            view.displayMessage("Mouvement impossible - Echec");
+            message = "Mouvement impossible - Echec";
             unDo();
+            displayMessage();
             return false;
         }
 
         if(playerIsCheck(getKing(opponentPlayer()).getKey())) {
-            view.displayMessage(opponentPlayer().toString() + " player is currently check!");
+            message = opponentPlayer().toString() + " player is currently check!";
         }
 
         if(checkmate(opponentPlayer())) {
-            view.displayMessage("Player "+ opponentPlayer() + " lose");
+            message = "Player "+ opponentPlayer() + " lose";
         }
 
         finishTurn();
@@ -355,8 +366,16 @@ public class Controller implements ChessController {
         putPieces();
     }
     private void refreshView(){
+        displayMessage();
         clearView();
         putPieces();
+    }
+
+    private void displayMessage(){
+        displayMessage(message);
+    }
+    private void displayMessage(String message) {
+        view.displayMessage(message);
     }
 
     private void clearView() {
@@ -374,22 +393,22 @@ public class Controller implements ChessController {
     private boolean canMove(Entry<Position, Piece> from, Entry<Position, Piece> to){
 
         if (isCorrectPlayer(from.getValue())){
-            view.displayMessage("C'est à l'équipe adverse de jouer !");
+            message = "C'est à l'équipe adverse de jouer !";
             return false;
         }
         if (pawnCanEat(from.getKey(), to.getKey())) return true;
 
         if (isLegalMove(from, to.getKey())) {
-            view.displayMessage("Mouvement interdit");
+            message = "Mouvement interdit";
             return false;
         }
         if(isSameColor(to.getKey())){
-            view.displayMessage("La destination possède déjà une pièce");
+            message = "La destination possède déjà une pièce";
             return false;
         }
 
         if(collisionExist(from.getKey(), to.getKey())){
-            view.displayMessage("Il y a une collision");
+            message = "Il y a une collision";
             return false;
         }
         return true;
