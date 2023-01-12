@@ -423,6 +423,7 @@ public class Controller implements ChessController {
         return true;
     }
 
+
     /**
      * Permet de définir si un Pawn peut manger en diagonal
      *
@@ -449,6 +450,11 @@ public class Controller implements ChessController {
      */
     private boolean isLegalMove(Position from, Position destination) {
         return !board.getPiece(from).legalMove(from, destination);
+    }
+
+    protected boolean isLegalMoveTest(Position from, Position destination)
+    {
+        return isLegalMove(from,destination);
     }
 
 

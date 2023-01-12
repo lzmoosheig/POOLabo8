@@ -13,15 +13,19 @@ import chess.engine.*;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
 public class test {
 
+    // Used for all test
+    ControllerTest controller = new ControllerTest(new Board());
+
     /*
-    * - Mouvement de chacune des pièces
+    * - Mouvement de chacune des pièce
   - Pion (uniquement en avant, première fois de 2 et ensuite de 1)
-- Détection de l'échec
+- Détéction de l'échec
 - Roque (grand et petit)
   - Egalement si la tour ou le roi on deja bougé avant
 - Prise en passant
@@ -32,8 +36,6 @@ public class test {
 
     @Test
     public void testCheckMate() {
-        ControllerTest controller = new ControllerTest(new Board());
-
         HashMap<Position, Piece> map = new HashMap<>();
         Piece Knight = new Knight(PlayerColor.WHITE);
         Piece KingB = new King(PlayerColor.BLACK);
@@ -49,6 +51,8 @@ public class test {
 
         assertTrue(controller.checkmateTest(PlayerColor.BLACK));
     }
+
+
 
 
 
