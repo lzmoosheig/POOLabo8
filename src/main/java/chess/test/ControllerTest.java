@@ -30,4 +30,14 @@ public class ControllerTest extends Controller {
     {
         return super.checkmateTest(player);
     }
+
+    /*public boolean canMoveTest(Position from, Position to)
+    {
+        return super.canMoveTest(from,to);
+    }*/
+
+    public boolean isLegalMoveTest(Position from, Position destination)
+    {
+        return super.isLegalMoveTest(from,destination);
+    }
 }

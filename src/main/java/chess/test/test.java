@@ -13,10 +13,14 @@ import chess.engine.*;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
 public class test {
+
+    // Used for all test
+    ControllerTest controller = new ControllerTest(new Board());
 
     /*
     * - Mouvement de chacune des pièces
@@ -47,6 +51,8 @@ public class test {
         assertTrue(controller.checkmateTest(PlayerColor.BLACK));
         assertFalse(controller.checkmateTest(PlayerColor.WHITE));
     }
+
+
 
 
 
