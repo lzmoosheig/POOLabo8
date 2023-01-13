@@ -8,6 +8,7 @@ import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Queen
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Queen extends Piece implements ChessView.UserChoice {
     /**
@@ -28,10 +29,14 @@ public class Queen extends Piece implements ChessView.UserChoice {
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-
         return Move.isDiagonal(from, to) || Move.isStraight(from, to);
     }
 
+    /**
+     * Réimplémentation de la fonction
+     *
+     * @return String avec le type de la classe parente
+     */
     @Override
     public String textValue() {
         return super.getType().toString();

@@ -8,6 +8,7 @@ import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Bishop
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Bishop extends Piece implements ChessView.UserChoice {
     /**
@@ -31,6 +32,11 @@ public class Bishop extends Piece implements ChessView.UserChoice {
         return Move.isDiagonal(from, to);
     }
 
+    /**
+     * Réimplémentation de la fonction
+     *
+     * @return String avec le type de la classe parente
+     */
     @Override
     public String textValue() {
         return super.getType().toString();

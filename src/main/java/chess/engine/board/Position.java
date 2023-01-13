@@ -2,10 +2,12 @@ package chess.engine.board;
 
 import chess.PieceType;
 import chess.PlayerColor;
+
 import java.util.Objects;
 
 /**
  * Classe permettant de représenter une positin sur l'échiquier
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Position {
@@ -14,6 +16,7 @@ public class Position {
 
     /**
      * Constructeur de la classe position
+     *
      * @param x La coordonnée x (largeur de l'échiquier)
      * @param y La coordonnée y (hauteur de l'échiquier)
      */
@@ -24,6 +27,7 @@ public class Position {
 
     /**
      * Getter de la coordonnée X
+     *
      * @return la coordonnée x
      */
     public int getX() {
@@ -32,6 +36,7 @@ public class Position {
 
     /**
      * Getter de la coordonnée Y
+     *
      * @return la coordonnée y
      */
     public int getY() {
@@ -40,6 +45,7 @@ public class Position {
 
     /**
      * Implementation de la méthode hashCode
+     *
      * @return le hashCode de l'objet instancié
      */
     @Override
@@ -49,6 +55,7 @@ public class Position {
 
     /**
      * Permet de comparer les attributs de la position instanciée avec celle passée en paramètre
+     *
      * @param other La position à comparer
      * @return true si les attributs sont identiques
      */
@@ -66,7 +73,8 @@ public class Position {
 
     /**
      * Permet de connaître toutes les positions d'un type de pièce d'une couleur donnée
-     * @param type de(s) pièce(s) dont on veut connaître la/les position(s)
+     *
+     * @param type  de(s) pièce(s) dont on veut connaître la/les position(s)
      * @param color de(s) pièce(s) dont on veut connaître la/les position(s)
      * @return un tableau de Position de toutes les pièces du type et de la couleur
      */
@@ -76,28 +84,28 @@ public class Position {
         switch (type) {
             case PAWN -> {
                 Position[] positions = new Position[Board.SIZE];
-                for (int i = 0; i < Board.SIZE; ++i){
+                for (int i = 0; i < Board.SIZE; ++i) {
                     positions[i] = new Position(i, pawnTeamIndex);
                 }
                 return positions;
             }
 
             case ROOK -> {
-                return new Position[] {new Position(0, teamIndex), new Position(7, teamIndex)};
+                return new Position[]{new Position(0, teamIndex), new Position(7, teamIndex)};
             }
             case KNIGHT -> {
-                return new Position[] {new Position(1, teamIndex), new Position(6, teamIndex)};
+                return new Position[]{new Position(1, teamIndex), new Position(6, teamIndex)};
             }
             case BISHOP -> {
-                return new Position[] {new Position(2, teamIndex), new Position(5, teamIndex)};
+                return new Position[]{new Position(2, teamIndex), new Position(5, teamIndex)};
             }
             case QUEEN -> {
-                return new Position[] {new Position(3, teamIndex)};
+                return new Position[]{new Position(3, teamIndex)};
             }
             case KING -> {
-                return new Position[] {new Position(4, teamIndex)};
+                return new Position[]{new Position(4, teamIndex)};
             }
-            default ->{
+            default -> {
                 return new Position[]{};
             }
         }
@@ -105,17 +113,20 @@ public class Position {
 
     /**
      * Permet de savoir si une position se situe bien sur l'échiquier
+     *
      * @return vrai si la position est sur l'échiquier
      */
-    public boolean isValidPosition(){
+    public boolean isValidPosition() {
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
 
     /**
-     * Réimplémentation de la méthode toString()
+     * Réimplementation de la méthode toString()
+     *
      * @return position dans le format "x : <x> - y : <y>"
      */
-    @Override public String toString(){
+    @Override
+    public String toString() {
         return "x : " + x + " - y : " + y;
     }
 }

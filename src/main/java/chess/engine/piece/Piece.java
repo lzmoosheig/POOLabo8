@@ -6,16 +6,10 @@ import chess.engine.board.Position;
 
 /**
  * Classe permettant de définir une pièce du jeu
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public abstract class Piece {
-    /**
-     * Stock le type de la pièce
-     */
     private final PieceType type;
-
-    /**
-     * Stock la couleur de la pièce
-     */
     private final PlayerColor color;
 
     /**
@@ -30,7 +24,7 @@ public abstract class Piece {
     }
 
     /**
-     * Permet de récupérer le type de la pièce instanciée
+     * Getter sur le type de la pièce
      *
      * @return Le type de la pièce
      */
@@ -39,7 +33,7 @@ public abstract class Piece {
     }
 
     /**
-     * Permet de récupérer la couleur de la pièce instanciée
+     * Getter sur la couleur de la pièce
      *
      * @return La couleur de la pièce.
      */
@@ -47,47 +41,22 @@ public abstract class Piece {
         return this.color;
     }
 
-    //TODO supprimer si on utilise pas...
-    /**
-     * Compare la couleur de la pièce instanciée avec celle passée en paramètre
-     *
-     * @param other La pièce à comparer
-     * @return true si la couleur est identique
-     */
-    private boolean equalsColor(Piece other) {
-        return color == other.color;
-    }
-
-    //TODO supprimer si on utilise pas...
-    /**
-     * Permet de comprer les attributs de la pièce instanciée avec celle passée en paramètre
-     *
-     * @param other La pièce à comparer
-     * @return true si les attributs sont identiques
-     */
-    @Override
-    public boolean equals(Object other) {
-        if (this == other)
-            return true;
-        if (other == null)
-            return false;
-        if (other instanceof Piece piece) {
-            return type == piece.type && equalsColor(piece);
-        }
-        return false;
-    }
-
     /**
      * Affichage d'une pièce
      *
-     * @return Une string contenant les éléments affichables de la pièce.
+     * @return Un String contenant les éléments affichables de la pièce.
      */
     @Override
     public String toString() {
         return color.toString() + " " + type.toString();
     }
 
+    /**
+     * Permet de savoir si un déplacement de la pièce est autorisé
+     *
+     * @param from position de départ de la pièce
+     * @param to   position d'arrivée de la pièce
+     * @return vrai si le déplacement est légal
+     */
     public abstract boolean legalMove(Position from, Position to);
-
-
 }

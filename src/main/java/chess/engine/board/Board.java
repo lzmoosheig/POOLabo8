@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 /**
  * Classe permettant de représenter l'échiquier
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Board implements Cloneable {
@@ -19,20 +20,23 @@ public class Board implements Cloneable {
     /**
      * Constructeur de la classe Board
      */
-    public Board(){}
+    public Board() {
+    }
 
     /**
      * Constructeur par copie de la classe Board
+     *
      * @param other échiquier à copier
      */
-    public Board(Board other){
+    public Board(Board other) {
         board.putAll(other.getBoard());
     }
 
     /**
      * Ajout d'une pièce sur l'échiquier
+     *
      * @param position emplacement où mettre la pièce
-     * @param piece pièce à placer
+     * @param piece    pièce à placer
      */
     public void add(Position position, Piece piece) {
         board.put(position, piece);
@@ -40,6 +44,7 @@ public class Board implements Cloneable {
 
     /**
      * Suppression du contenu d'une case de l'échiquer
+     *
      * @param position emplaçement où supprimer
      */
     public void remove(Position position) {
@@ -48,25 +53,28 @@ public class Board implements Cloneable {
 
     /**
      * Déplacer le contenu d'une positin de l'échiquier à une autre
+     *
      * @param from
      * @param to
      */
-    public void move(Position from, Position to){
+    public void move(Position from, Position to) {
         add(to, board.get(from));
         board.remove(from);
     }
 
     /**
      * Permet de savoir quelle pièce est à une position spécifique
+     *
      * @param position dont on veut connaître le contenu
      * @return pièce sur la position
      */
-    public Piece getPiece(Position position){
+    public Piece getPiece(Position position) {
         return board.get(position);
     }
 
     /**
      * Getter sur l'échiquier
+     *
      * @return l'échiquier sour forme de HashMap<Position, Piece>
      */
     public HashMap<Position, Piece> getBoard() {
@@ -75,11 +83,12 @@ public class Board implements Cloneable {
 
     /**
      * Retourne une association Position-Piece
+     *
      * @param position sur laquel on veut connaître l'association
      * @return associtation sous forme Entry<Position, Piece>
      */
-    public Entry<Position, Piece> getEntry(Position position){
-        if (position == null){
+    public Entry<Position, Piece> getEntry(Position position) {
+        if (position == null) {
             throw new RuntimeException("Position can't be null");
         }
         return new AbstractMap.SimpleEntry<>(position, board.get(position));
@@ -102,6 +111,7 @@ public class Board implements Cloneable {
 
     /**
      * Initialise toutes les pièces d'une couleur nécéssaires au démarrage du jeu
+     *
      * @param color couleur des pièces à initialiser
      */
     private void initialize(PlayerColor color) {

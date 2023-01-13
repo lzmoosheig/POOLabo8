@@ -5,15 +5,13 @@ import chess.PlayerColor;
 
 /**
  * Class d'extension de Piece
+ * @author Anthony David, Alexadnre Iorio, Léo Zmoos
  */
 public abstract class PieceExtend extends Piece {
-    /**
-     * Permet de savoir si la pièce à déjà fait son premier mouvement
-     */
-    protected boolean firstMove = true;
+    protected boolean firstMove = true; // si c'est le premier mouvement de la pièce
 
     /**
-     * Constructeur d'une pièce
+     * Réimplémentation du constructeur de Piece
      *
      * @param color La couleur de la pièce
      * @param type  Le type de la pièce
@@ -22,11 +20,19 @@ public abstract class PieceExtend extends Piece {
         super(color, type);
     }
 
+    /**
+     * Getter sur le premier mouvement
+     *
+     * @return vrai si c'est le premier mouvement
+     */
     public boolean getFirstMove()
     {
         return firstMove;
     }
 
+    /**
+     * Setter permettant de passer le premier mouvement à false lors de celui-ci.
+     */
     public void setFirstMove() {
         this.firstMove = false;
     }

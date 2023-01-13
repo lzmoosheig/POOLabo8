@@ -8,8 +8,11 @@ import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Knight
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Knight extends Piece implements ChessView.UserChoice {
+    final private double DISTANCE_MAX = Math.sqrt(1 + 2 * 2); //distance exacte que Knight doit respecter lors d'un mouvement
+
     /**
      * Constructeur de Knight
      *
@@ -19,10 +22,6 @@ public class Knight extends Piece implements ChessView.UserChoice {
         super(color, PieceType.KNIGHT);
     }
 
-    /**
-     * Définit la distance exacte que Knight doit respecter lors d'un mouvement
-     */
-    private static final double DISTANCE_MAX = Math.sqrt(1 + 2 * 2);
 
     /**
      * Permet de définir si le mouvement est legal
@@ -35,6 +34,12 @@ public class Knight extends Piece implements ChessView.UserChoice {
     public boolean legalMove(Position from, Position to) {
         return DISTANCE_MAX == Math.hypot(Move.getAbsDistX(from,to), Move.getAbsDistY(from,to));
     }
+
+    /**
+     * Réimplémentation de la fonction
+     *
+     * @return String avec le type de la classe parente
+     */
     @Override
     public String textValue() {
         return super.getType().toString();

@@ -8,6 +8,7 @@ import chess.engine.move.*;
 
 /**
  * Class définissant une piece de type King
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class King extends PieceExtend {
     /**
@@ -30,4 +31,5 @@ public class King extends PieceExtend {
     public boolean legalMove(Position from, Position to) {
         return Move.getDistance(from, to) == 1;
     }
+
 }
