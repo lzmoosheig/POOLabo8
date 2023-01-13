@@ -13,7 +13,7 @@ import java.util.Map.Entry;
  *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
-public class Board implements Cloneable {
+public class Board {
     public final static byte SIZE = 8; // Taille de l'échiquier
     private HashMap<Position, Piece> board = new HashMap<>();
 
@@ -43,19 +43,19 @@ public class Board implements Cloneable {
     }
 
     /**
-     * Suppression du contenu d'une case de l'échiquer
+     * Suppression du contenu d'une case de l'échiquier
      *
-     * @param position emplaçement où supprimer
+     * @param position emplacement où supprimer
      */
     public void remove(Position position) {
         board.remove(position);
     }
 
     /**
-     * Déplacer le contenu d'une positin de l'échiquier à une autre
+     * Déplacer le contenu d'une position de l'échiquier à une autre
      *
-     * @param from
-     * @param to
+     * @param from position de départ de la pièce
+     * @param to   position d'arrivée de la pièce
      */
     public void move(Position from, Position to) {
         add(to, board.get(from));
@@ -84,8 +84,8 @@ public class Board implements Cloneable {
     /**
      * Retourne une association Position-Piece
      *
-     * @param position sur laquel on veut connaître l'association
-     * @return associtation sous forme Entry<Position, Piece>
+     * @param position sur laquelle on veut connaître l'association
+     * @return association sous forme Entry<Position, Piece>
      */
     public Entry<Position, Piece> getEntry(Position position) {
         if (position == null) {
@@ -95,14 +95,9 @@ public class Board implements Cloneable {
     }
 
     /**
-     * Initialise tout l'échiquier avec toutes les pièces nécéssaires au démarrage du jeu
+     * Initialise tout l'échiquier avec toutes les pièces nécessaires au démarrage du jeu
      */
     public void initialize() {
-
-//        add(new Position(5,5), new Knight(PlayerColor.WHITE));
-//        add(new Position(7,7), new King(PlayerColor.BLACK));
-//        add(new Position(0,0), new King(PlayerColor.WHITE));
-//        add(new Position(6,6), new Rook(PlayerColor.WHITE));
 
         board = new HashMap<>();
         initialize(PlayerColor.BLACK);
@@ -110,7 +105,7 @@ public class Board implements Cloneable {
     }
 
     /**
-     * Initialise toutes les pièces d'une couleur nécéssaires au démarrage du jeu
+     * Initialise toutes les pièces d'une couleur nécessaires au démarrage du jeu
      *
      * @param color couleur des pièces à initialiser
      */

@@ -8,6 +8,7 @@ import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Rook
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Rook extends PieceExtend implements ChessView.UserChoice {

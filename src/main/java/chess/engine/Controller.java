@@ -16,62 +16,43 @@ import java.util.Map.Entry;
 
 /**
  * Class permettant de controller une partie d'échec.
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Controller implements ChessController {
-
-    /**
-     * Stock la view que le Controlleur doit controller
-     */
-    private ChessView view;
-    /**
-     * Lors d'un événement, stock la position clé-valeur du premier click de l'utilisateur
-     */
-
+    private ChessView view; // View que Controller doit gérer
     private int turn;
-
     private String message;
 
-    /**
-     * Permet de compter le nombre de tours sans mouvement de pion
-     */
-    private int cptPawn;
-    private Position from;
-    /**
-     * Lors d'un événement, stock la position clé-valeur du second click de l'utilisateur
-     */
-    private Position to;
-
-    /**
-     * Stock la board que le Controlleur doit controller
-     */
-    private Board board = new Board();
-
-    /**
-     * Stock un snapshot de la board afin de rétablir un état antérieur
-     */
-    private Board boardSnapShot = new Board();
-
+    private int cptPawn; // Nombre de tours sans mouvement de pions
+    private Position from; // Position clé-valeur du premier click de l'utilisateur
+    private Position to; // Position clé-valeur du second click de l'utilisateur
+    private Board board = new Board(); // Échiquier sur lequel on va effectuer la partie
+    private Board boardSnapShot = new Board(); // Etat de l'échiquier à un moment donné pour retour à une situation antérieur
     private Piece lastPiece = null;
-
-    /**
-     * Définit si c'est le tour de blanc
-     */
-    private boolean isBlackTurn = false;
+    private boolean isBlackTurn = false; // Définit si c'est au tour des blancs ou des noirs
 
     /**
      * Constructeur du Controller
-     *
      */
     public Controller() {}
 
+    /**
+     * Test si un roi est en échec
+     *
+     * @param positionOfKingToCheck Position du roi qui peut être mise en échec
+     * @return vrai si le roi est échec
+     */
     private boolean playerIsCheck(Position positionOfKingToCheck){
         return playerIsCheck(board, positionOfKingToCheck);
     }
 
-    protected boolean playerIsCheckTest(Position positionOfKingToCheck) {
-        return playerIsCheck(positionOfKingToCheck);
-    }
-
+    /**
+     * Test si un roi est en échec
+     *
+     * @param board Échiquier sur lequel on joue
+     * @param positionOfKingToCheck
+     * @return vrai si le roi est en échec
+     */
     private boolean playerIsCheck(Board board, Position positionOfKingToCheck){
         Piece kingToCheck = board.getPiece(positionOfKingToCheck);
         for(Entry<Position, Piece> entry : board.getBoard().entrySet()){
@@ -87,6 +68,13 @@ public class Controller implements ChessController {
         return false;
     }
 
+    /**
+     * Fonction qui recherche la position du roi d'une couleur donnée sur l'échiquier
+     *
+     * @param color couleur du roi recherché
+     * @return - Entry<Position, Piece> avec la position du roi et pièce de ce dernier.
+     *         - null si ne trouve pas le roi
+     */
     private Entry<Position, Piece> getKing(PlayerColor color){
         for (Entry<Position, Piece> entry : board.getBoard().entrySet()){
             if (entry.getValue() instanceof King king && king.getColor() == color){
@@ -96,20 +84,36 @@ public class Controller implements ChessController {
         return null;
     }
 
+    /**
+     * Contrôle si un joueur est en échec pour un échiquier donné
+     *
+     * @param board échiquier sur lequel on joue
+     * @param from position de départ du mouvement
+     * @param to position d'arrivée du mouvement
+     * @return vrai si le jeu est en échec
+     */
     private boolean isCheck(Board board, Position from, Position to){
 
         return (board.getPiece(from).legalMove(from, to) || pawnCanEat(from, to)) && !collisionExist(from, to);
     }
 
+    /**
+     * Contrôle si le jeu est en échec pour l'échiquier en cours
+     *
+     * @param from position de départ du mouvement
+     * @param to position d'arrivée du mouvement
+     * @return vrai si le jeu est en échec
+     */
     private boolean isCheck(Position from, Position to){
         return isCheck(board, from, to);
     }
 
-    protected boolean isCheckTest(Position from, Position to)
-    {
-        return isCheck(from,to);
-    }
-
+    /**
+     * Contrôle si un joueur est en échec et mat
+     *
+     * @param player joueur qu'on vérifie la situation
+     * @return vrai si le joueur est en échec et mat
+     */
     private boolean checkmate(PlayerColor player){
         Position kingPosition = getKing(player).getKey();
 
@@ -142,13 +146,7 @@ public class Controller implements ChessController {
 
         for (Position validPosition : validPositions){
             board.move(kingPosition, validPosition);
-//            for (Entry<Position, Piece> entry : simulationBoard.getBoard().entrySet()){
-//                Piece attacant = entry.getValue();
-//                if (!attacant.legalMove(entry.getKey(), validPosition)
-//                        || collisionExist(entry.getKey(), validPosition)){
-//                    return false;
-//                }
-//            }
+
             if (!playerIsCheck(board, validPosition)){
                 board = new Board(boardSnapShot);
                 return false;
@@ -158,13 +156,8 @@ public class Controller implements ChessController {
         return true;
     }
 
-    protected boolean checkmateTest(PlayerColor player){
-
-        return checkmate(player);
-    }
-
     /**
-     * Démmare le jeu
+     * Démarre le jeu
      *
      * @param view La vue sur laquelle le jeu doit démarrer
      * @throws RuntimeException si la vue est null
@@ -203,8 +196,6 @@ public class Controller implements ChessController {
 
         captureEvent(fromX, fromY, toX, toY);
 
-        //if (isPat())
-
         if (!to.isValidPosition()){
             message = "Position invalide";
             displayMessage();
@@ -212,7 +203,7 @@ public class Controller implements ChessController {
         }
 
         if (from == null) {
-            message = "Aucune pièce seléctionnée";
+            message = "Aucune pièce sélectionnée";
             displayMessage();
             return false;
         }
@@ -292,11 +283,6 @@ public class Controller implements ChessController {
         return true;
     }
 
-    protected boolean isPatTest()
-    {
-        return isPat();
-    }
-
     private boolean priseEnPassant(Position from, Position to) {
         if (currentPlayer() != board.getPiece(from).getColor()) return false;
         int coef = Move.getCoef(currentPlayer());
@@ -313,10 +299,6 @@ public class Controller implements ChessController {
         return false;
     }
 
-    protected boolean priseEnPassantTest(Position from, Position to)
-    {
-        return priseEnPassant(from, to);
-    }
 
     private void finishTurn(){
         turn++;
@@ -441,7 +423,6 @@ public class Controller implements ChessController {
             message = "La destination possède déjà une pièce";
             return false;
         }
-
         if(collisionExist(from, to)){
             message = "Il y a une collision";
             return false;
@@ -454,11 +435,6 @@ public class Controller implements ChessController {
         return canMove(from,to);
     }
 
-
-
-
-
-
     /**
      * Permet de définir si un Pawn peut manger en diagonal
      *
@@ -466,7 +442,6 @@ public class Controller implements ChessController {
      * @param to La position de destination
      * @return
      */
-
     private boolean pawnCanEat(Position from, Position to) {
         if ((from.getY() - to.getY()) * Move.getCoef(board.getPiece(from).getColor()) > 0) return false;
         if ( board.getPiece(from) instanceof Pawn pawn
@@ -487,6 +462,11 @@ public class Controller implements ChessController {
         return !board.getPiece(from).legalMove(from, destination);
     }
 
+    /**
+     * Contrôle si c'est la même couleur
+     * @param to position d'arrivée de la pièce demandée
+     * @return vrai si c'est la même couleur
+     */
     private boolean isSameColor(Position to){
         Piece piece = board.getPiece(to);
         if (piece == null) {
@@ -494,16 +474,9 @@ public class Controller implements ChessController {
         }
         return board.getPiece(from).getColor() == piece.getColor();
     }
-    /**
-     * Permet de définir si la destination possède est occupée par le même joueur
-     * @return True si le la destination est de la même couleur
-     */
-    private boolean isSameColor() {
-       return isSameColor(to);
-    }
 
     /**
-     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision.
+     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision pour un échiquier donné.
      * Bloque le pion s'il y a un adversaire devant lui, ignore le cavalier
      * @param from la position de départ
      * @param to La position de destination
@@ -528,22 +501,17 @@ public class Controller implements ChessController {
         return false;
     }
 
+    /**
+     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision pour l'échiquier en cours.
+     * Bloque le pion s'il y a un adversaire devant lui, ignore le cavalier
+     * @param from la position de départ
+     * @param to La position de destination
+     * @return true si il y a une collision
+     */
     private boolean collisionExist(Position from, Position to){
         return collisionExist(board, from, to);
     }
 
-    protected boolean collisionExistTest(Position from, Position to)
-    {
-        return collisionExist(from, to);
-    }
-
-    /**
-     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision
-     * @return true si il y a une collision
-     */
-    private boolean collisionExist(){
-        return collisionExist(from, to);
-    }
 
     /**
      * Permet de mettre à jour la view avec l'ajout d'une pièce
@@ -591,9 +559,14 @@ public class Controller implements ChessController {
     private void removePiece(Position position) {
         view.removePiece(position.getX(), position.getY());
     }
-    //TODO Attention au roque pas kingside mettre la position juste selon les regles
-    //TODO attention au roque quand c'est pas ton tour
-    //TODO checker les echec sur toutes les case du roque pas seuleument sur le roi
+
+    /**
+     * Vérifie si les conditions requises au roque sont réunies
+     *
+     * @param from position de départ du mouvement
+     * @param to position d'arrivée demandée par le joueur
+     * @return vrai si le roque peut être fait
+     */
     public boolean canCastle(Position from, Position to){
         // On doit définit si grand ou petit roque (tour de droite ou de gauche)
         int rookX = (to.getX() < from.getX() ? 0 : 7);
@@ -609,9 +582,16 @@ public class Controller implements ChessController {
         return false;
     }
 
+    /**
+     * Fonction qui fait le roque (voir si petit ou grand et initier le roque avec la fonction castling())
+     *
+     * @param from position de départ de la pièce
+     * @param to position d'arrivée demandée de la pièce
+     * @return
+     */
     private boolean castle(Position from, Position to)
     {
-        // true si petit
+        // true si petit roque
         boolean smallCastlingAsked = to.getX() == 6;
 
         Position futurPosition = new Position(smallCastlingAsked ? 6 : 2 , currentPlayer() == PlayerColor.WHITE ? 0 : 7);
@@ -626,6 +606,11 @@ public class Controller implements ChessController {
 
     }
 
+    /**
+     * Fonction qui fait le roque (déplacement des pièces)
+     *
+     * @param smallCastlingAsked
+     */
     private void castling(boolean smallCastlingAsked){
         int y = currentPlayer() == PlayerColor.WHITE ? 0 : 7;
         int kingX = smallCastlingAsked ? 6 : 2;
@@ -640,10 +625,5 @@ public class Controller implements ChessController {
         board.add(rookTo, board.getPiece(rookFrom));
         board.remove(kingFrom);
         board.remove(rookFrom);
-    }
-
-    public int getTurn()
-    {
-        return turn;
     }
 }

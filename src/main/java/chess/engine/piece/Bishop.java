@@ -34,7 +34,7 @@ public class Bishop extends Piece implements ChessView.UserChoice {
     }
 
     /**
-     * Réimplémentation de la fonction
+     * Réimplementation de la fonction
      *
      * @return String avec le type de la classe parente
      */

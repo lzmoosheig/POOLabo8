@@ -11,10 +11,10 @@ import chess.engine.board.Position;
 public class Move {
 
     /**
-     * Permet d'avoir un coefficiant positif si la couleur est blanche et négative si la couleur est noire
+     * Permet d'avoir un coefficient positif si la couleur est blanche et négative si la couleur est noire
      *
      * @param playerColor couleur demandée
-     * @return
+     * @return -1 si va en arrière et 1 si va en avant
      */
     public static int getCoef(PlayerColor playerColor) {
         return playerColor == PlayerColor.WHITE ? 1 : -1;
@@ -104,7 +104,7 @@ public class Move {
     }
 
     /**
-     * Récupère les positions se trouvant sur le chemin entre from(non compris) et to (non compris)
+     * Récupère les positions se trouvant sur le chemin entre from (non compris) et to (non compris)
      *
      * @param from La position de départ
      * @param to   La position de destination

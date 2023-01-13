@@ -6,13 +6,13 @@ import chess.PlayerColor;
 import java.util.Objects;
 
 /**
- * Classe permettant de représenter une positin sur l'échiquier
+ * Classe permettant de représenter une position sur l'échiquier
  *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Position {
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     /**
      * Constructeur de la classe position
@@ -112,7 +112,7 @@ public class Position {
     }
 
     /**
-     * Permet de savoir si une position se situe bien sur l'échiquier
+     * Permet de savoir si une position se situe bien sûr l'échiquier
      *
      * @return vrai si la position est sur l'échiquier
      */
@@ -121,7 +121,7 @@ public class Position {
     }
 
     /**
-     * Réimplementation de la méthode toString()
+     * Implementation de la méthode toString()
      *
      * @return position dans le format "x : <x> - y : <y>"
      */
