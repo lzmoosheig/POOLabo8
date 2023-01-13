@@ -8,6 +8,7 @@ import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Knight
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Knight extends Piece implements ChessView.UserChoice {
@@ -32,7 +33,7 @@ public class Knight extends Piece implements ChessView.UserChoice {
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-        return DISTANCE_MAX == Math.hypot(Move.getAbsDistX(from,to), Move.getAbsDistY(from,to));
+        return DISTANCE_MAX == Math.hypot(Move.getAbsDistX(from, to), Move.getAbsDistY(from, to));
     }
 
     /**

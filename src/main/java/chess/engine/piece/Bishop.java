@@ -8,6 +8,7 @@ import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Bishop
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Bishop extends Piece implements ChessView.UserChoice {

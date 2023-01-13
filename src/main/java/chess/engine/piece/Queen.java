@@ -8,6 +8,7 @@ import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Queen
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Queen extends Piece implements ChessView.UserChoice {

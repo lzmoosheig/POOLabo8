@@ -5,6 +5,7 @@ import chess.PlayerColor;
 
 /**
  * Class d'extension de Piece
+ *
  * @author Anthony David, Alexadnre Iorio, Léo Zmoos
  */
 public abstract class PieceExtend extends Piece {
@@ -25,8 +26,7 @@ public abstract class PieceExtend extends Piece {
      *
      * @return vrai si c'est le premier mouvement
      */
-    public boolean getFirstMove()
-    {
+    public boolean getFirstMove() {
         return firstMove;
     }
 

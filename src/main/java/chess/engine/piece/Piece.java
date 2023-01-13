@@ -6,6 +6,7 @@ import chess.engine.board.Position;
 
 /**
  * Classe permettant de définir une pièce du jeu
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public abstract class Piece {
