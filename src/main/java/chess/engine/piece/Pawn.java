@@ -7,6 +7,7 @@ import chess.engine.move.Move;
 
 /**
  * Class définissant une piece de type Pawn
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Pawn extends PieceExtend {
@@ -15,18 +16,6 @@ public class Pawn extends PieceExtend {
      *
      * @param color La couleur de la pièce
      */
-
-//    private int firstMoveTurn;
-
-//    public void setFirstMoveTurn(int firstMoveTurn) {
-//        if (!getFirstMove()) return;
-//        this.firstMoveTurn = firstMoveTurn;
-//    }
-
-//    public int getFirstMoveTurn() {
-//        return firstMoveTurn;
-//    }
-
     public Pawn(PlayerColor color) {
         super(color, PieceType.PAWN);
     }
@@ -40,7 +29,7 @@ public class Pawn extends PieceExtend {
      */
     public boolean moveAhead(Position from, Position to) {
         int coef = Move.getCoef(getColor());
-        return (to.getY() - from.getY()) * coef > 0 && to.getX()-from.getX() == 0;
+        return (to.getY() - from.getY()) * coef > 0 && to.getX() - from.getX() == 0;
     }
 
     /**
@@ -52,8 +41,6 @@ public class Pawn extends PieceExtend {
      */
     @Override
     public boolean legalMove(Position from, Position to) {
-        return Move.isStraight(from, to)
-                && moveAhead(from, to)
-                && Move.getDistance(from, to) <= (firstMove ? 2 : 1);
+        return Move.isStraight(from, to) && moveAhead(from, to) && Move.getDistance(from, to) <= (firstMove ? 2 : 1);
     }
 }

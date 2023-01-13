@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 /**
  * Class permettant de controller une partie d'échec.
+ * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class Controller implements ChessController {
 

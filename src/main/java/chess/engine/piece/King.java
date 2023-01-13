@@ -8,6 +8,7 @@ import chess.engine.move.*;
 
 /**
  * Class définissant une piece de type King
+ *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
 public class King extends PieceExtend {
