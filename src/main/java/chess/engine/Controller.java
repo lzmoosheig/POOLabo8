@@ -183,6 +183,7 @@ public class Controller implements ChessController {
     @Override
     public void newGame() {
         if (view == null) throw new RuntimeException("The view can't be null");
+        message = "New game, it's up to the white player to play ";
         isBlackTurn = false;
         initialize();
         refreshView();
@@ -204,23 +205,21 @@ public class Controller implements ChessController {
 
         captureEvent(fromX, fromY, toX, toY);
 
-        //if (isPat())
-
         if (!to.isValidPosition()){
-            message = "Position invalide";
+            message = "Invalid position";
             displayMessage();
             return false;
         }
 
-        if (from == null) {
-            message = "Aucune pièce seléctionnée";
+        if (board.getPiece(from) == null) {
+            message = "no pieces are selected";
             displayMessage();
             return false;
         }
 
         if(canCastle(from, to)){
             if (!castle(from, to)){
-                message = "Action impossible, Le roque se met le roi en échec";
+                message = "Impossible action, Castling puts the king in check";
                 displayMessage();
                 return false;
             }
@@ -245,25 +244,27 @@ public class Controller implements ChessController {
 
         board.move(from, to);
 
-        if(to.getY() == (isBlackTurn? 0 : 7) && board.getPiece(from).getType() == PieceType.PAWN){
+        if(to.getY() == (isBlackTurn? 0 : 7) && board.getPiece(to).getType() == PieceType.PAWN){
             Promotion();
         }
 
         if(playerIsCheck(getKing(currentPlayer()).getKey())) {
-            message = "Mouvement impossible - Echec";
+            message = "Impossible movement - the king is check";
             unDo();
             displayMessage();
             return false;
         }
 
         if(checkmate(opponentPlayer())) {
-            message = "Player "+ opponentPlayer() + " lose";
-            finishTurn();
-            return true;
+            askNewGame();
+            return false;
         }
 
         if(playerIsCheck(getKing(opponentPlayer()).getKey())) {
-            message = opponentPlayer().toString() + " player is currently check!";
+            message = opponentPlayer().toString() + " player is currently check, move your King! ";
+        }
+        else {
+            message = "it's up to the " + opponentPlayer() + " player to play";
         }
 
 
@@ -271,31 +272,27 @@ public class Controller implements ChessController {
         return true;
     }
 
-    private boolean isPat() {
-        Position positions[] = new Position[board.SIZE * board.SIZE];
-        for (int i = 0; i < board.SIZE; ++i) {
-            for (int j = 0; j < board.SIZE; ++j) {
-                int index = i * board.SIZE + j;
-                positions[index] = new Position(i, j);
-            }
+    private void askNewGame(){
+
+        if (view.askUser("Game over", opponentPlayer() + " lose the game\nNew Game ?",
+                new ChessView.UserChoice() {
+                    @Override
+                    public String textValue() {
+                        return "Yes";
+                    }
+                }, new ChessView.UserChoice() {
+                    @Override
+                    public String textValue() {
+                        return "No";
+                    }
+                }).textValue() == "Yes") {
+            newGame();
+        } else {
+            System.exit(0);
         }
 
-        for (Entry<Position, Piece> entry : board.getBoard().entrySet()) {
-            Piece piece = entry.getValue();
-            Position initialPosition = entry.getKey();
-            for (Position position : positions) {
-                Entry<Position, Piece> toEntry = new AbstractMap.SimpleEntry<>(position, board.getPiece(position));
-                if (canMove(entry.getKey(), toEntry.getKey())) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
-    protected boolean isPatTest()
-    {
-        return isPat();
+
     }
 
     private boolean priseEnPassant(Position from, Position to) {
@@ -327,19 +324,40 @@ public class Controller implements ChessController {
     }
 
     private void Promotion() {
+        class PieceChoice implements ChessView.UserChoice {
+            private final PieceType pieceType;
+
+            PieceChoice(PieceType pieceType){
+                this.pieceType = pieceType;
+            }
+
+            public PieceType getType() {
+                return pieceType;
+            }
+            @Override
+            public String textValue() {
+                return pieceType.toString();
+            }
+        }
 
         ChessView.UserChoice[] userChoices = new ChessView.UserChoice[]{
-                new Queen(currentPlayer()),
-                new Bishop(currentPlayer()),
-                new Rook(currentPlayer()),
-                new Knight(currentPlayer())};
+                new PieceChoice(PieceType.QUEEN),
+                new PieceChoice(PieceType.BISHOP),
+                new PieceChoice(PieceType.KNIGHT),
+                new PieceChoice(PieceType.ROOK)
+        };
 
         ChessView.UserChoice userChoice = view.askUser("Pawn promotion",
                 "Please, choose a piece", userChoices);
-
-        if (userChoice != null) {
-            board.add(to, (Piece) userChoice);
+        PieceType selectedType = ((PieceChoice) userChoice).getType();
+        switch (selectedType){
+            case QUEEN -> board.add(to, new Queen(currentPlayer()));
+            case BISHOP -> board.add(to, new Bishop(currentPlayer()));
+            case KNIGHT -> board.add(to, new Knight(currentPlayer()));
+            case ROOK -> board.add(to, new Rook(currentPlayer()));
+            default -> throw new RuntimeException("Impossible to promote");
         }
+
     }
 
     private PlayerColor currentPlayer(){

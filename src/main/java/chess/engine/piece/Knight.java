@@ -11,7 +11,7 @@ import chess.engine.move.Move;
  *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
-public class Knight extends Piece implements ChessView.UserChoice {
+public class Knight extends Piece {
     final private double DISTANCE_MAX = Math.sqrt(1 + 2 * 2); //distance exacte que Knight doit respecter lors d'un mouvement
 
     /**
@@ -36,13 +36,4 @@ public class Knight extends Piece implements ChessView.UserChoice {
         return DISTANCE_MAX == Math.hypot(Move.getAbsDistX(from, to), Move.getAbsDistY(from, to));
     }
 
-    /**
-     * Réimplémentation de la fonction
-     *
-     * @return String avec le type de la classe parente
-     */
-    @Override
-    public String textValue() {
-        return super.getType().toString();
-    }
 }

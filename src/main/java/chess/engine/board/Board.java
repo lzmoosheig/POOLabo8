@@ -95,7 +95,7 @@ public class Board implements Cloneable {
     }
 
     /**
-     * Initialise tout l'échiquier avec toutes les pièces nécéssaires au démarrage du jeu
+     * Initialise tout l'échiquier avec toutes les pièces nécessaires au démarrage du jeu
      */
     public void initialize() {
 
@@ -103,6 +103,8 @@ public class Board implements Cloneable {
 //        add(new Position(7,7), new King(PlayerColor.BLACK));
 //        add(new Position(0,0), new King(PlayerColor.WHITE));
 //        add(new Position(6,6), new Rook(PlayerColor.WHITE));
+//
+//        add(new Position(4,6), new Pawn(PlayerColor.WHITE));
 
         board = new HashMap<>();
         initialize(PlayerColor.BLACK);
@@ -110,7 +112,7 @@ public class Board implements Cloneable {
     }
 
     /**
-     * Initialise toutes les pièces d'une couleur nécéssaires au démarrage du jeu
+     * Initialise toutes les pièces d'une couleur nécessaires au démarrage du jeu
      *
      * @param color couleur des pièces à initialiser
      */

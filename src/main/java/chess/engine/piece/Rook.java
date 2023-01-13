@@ -11,7 +11,7 @@ import chess.engine.move.Move;
  *
  * @author Anthony David, Alexandre Iorio, Léo Zmoos
  */
-public class Rook extends PieceExtend implements ChessView.UserChoice {
+public class Rook extends PieceExtend{
     /**
      * Constructeur de Rook
      *
@@ -33,13 +33,4 @@ public class Rook extends PieceExtend implements ChessView.UserChoice {
         return Move.isStraight(from, to);
     }
 
-    /**
-     * Réimplémentation de la fonction
-     *
-     * @return String avec le type de la classe parente
-     */
-    @Override
-    public String textValue() {
-        return super.getType().toString();
-    }
 }
