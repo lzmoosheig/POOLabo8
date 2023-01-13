@@ -13,6 +13,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Class permettant de controller une partie d'échec.
@@ -50,7 +51,7 @@ public class Controller implements ChessController {
      * Test si un roi est en échec
      *
      * @param board Échiquier sur lequel on joue
-     * @param positionOfKingToCheck
+     * @param positionOfKingToCheck position du roi à contrôler
      * @return vrai si le roi est en échec
      */
     private boolean playerIsCheck(Board board, Position positionOfKingToCheck){
@@ -115,7 +116,7 @@ public class Controller implements ChessController {
      * @return vrai si le joueur est en échec et mat
      */
     private boolean checkmate(PlayerColor player){
-        Position kingPosition = getKing(player).getKey();
+        Position kingPosition = Objects.requireNonNull(getKing(player)).getKey();
 
         //sequences de directions
         int[] sequencesX = {-1, -1, -1, 0, 0, 1, 1, 1};
@@ -239,7 +240,7 @@ public class Controller implements ChessController {
             Promotion();
         }
 
-        if(playerIsCheck(getKing(currentPlayer()).getKey())) {
+        if(playerIsCheck(Objects.requireNonNull(getKing(currentPlayer())).getKey())) {
             message = "Mouvement impossible - Echec";
             unDo();
             displayMessage();
@@ -252,7 +253,7 @@ public class Controller implements ChessController {
             return true;
         }
 
-        if(playerIsCheck(getKing(opponentPlayer()).getKey())) {
+        if(playerIsCheck(Objects.requireNonNull(getKing(opponentPlayer())).getKey())) {
             message = opponentPlayer().toString() + " player is currently check!";
         }
 
@@ -262,10 +263,10 @@ public class Controller implements ChessController {
     }
 
     private boolean isPat() {
-        Position positions[] = new Position[board.SIZE * board.SIZE];
-        for (int i = 0; i < board.SIZE; ++i) {
-            for (int j = 0; j < board.SIZE; ++j) {
-                int index = i * board.SIZE + j;
+        Position[] positions = new Position[Board.SIZE * Board.SIZE];
+        for (int i = 0; i < Board.SIZE; ++i) {
+            for (int j = 0; j < Board.SIZE; ++j) {
+                int index = i * Board.SIZE + j;
                 positions[index] = new Position(i, j);
             }
         }
@@ -396,8 +397,8 @@ public class Controller implements ChessController {
     }
 
     private void clearView() {
-        for (int x = 0; x < board.SIZE; ++x ){
-            for (int y = 0; y < board.SIZE; ++y){
+        for (int x = 0; x < Board.SIZE; ++x ){
+            for (int y = 0; y < Board.SIZE; ++y){
                 view.removePiece(x, y);
             }
         }
@@ -440,7 +441,7 @@ public class Controller implements ChessController {
      *
      * @param from la position de départ
      * @param to La position de destination
-     * @return
+     * @return vrai si le pion peut manger la pièce
      */
     private boolean pawnCanEat(Position from, Position to) {
         if ((from.getY() - to.getY()) * Move.getCoef(board.getPiece(from).getColor()) > 0) return false;
@@ -576,10 +577,9 @@ public class Controller implements ChessController {
         Position rookPosition = new Position(rookX, rookY); // Trouver la position de la tour
         Piece second = board.getPiece(rookPosition);
 
-        if (first instanceof King king && second instanceof Rook rook
-            && king.getFirstMove() && rook.getFirstMove()
-            && !collisionExist(from, rookPosition) && !playerIsCheck(from)) return true;
-        return false;
+        return first instanceof King king && second instanceof Rook rook
+                && king.getFirstMove() && rook.getFirstMove()
+                && !collisionExist(from, rookPosition) && !playerIsCheck(from);
     }
 
     /**
@@ -587,7 +587,7 @@ public class Controller implements ChessController {
      *
      * @param from position de départ de la pièce
      * @param to position d'arrivée demandée de la pièce
-     * @return
+     * @return vrai si le roque peut se faire
      */
     private boolean castle(Position from, Position to)
     {
@@ -609,7 +609,7 @@ public class Controller implements ChessController {
     /**
      * Fonction qui fait le roque (déplacement des pièces)
      *
-     * @param smallCastlingAsked
+     * @param smallCastlingAsked vrai si on demande le petit roque
      */
     private void castling(boolean smallCastlingAsked){
         int y = currentPlayer() == PlayerColor.WHITE ? 0 : 7;
