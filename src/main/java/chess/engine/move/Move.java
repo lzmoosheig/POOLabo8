@@ -149,7 +149,7 @@ public class Move {
             }
             return way;
         }
-        throw new RuntimeException("Mouvement illégal");
+        throw new RuntimeException("Illegal movement");
     }
 
 }

@@ -20,8 +20,8 @@ import java.util.Map.Entry;
 public class Controller implements ChessController {
     private ChessView view; // View que Controller doit gérer
 
-    private int turn;
-    private String message;
+    // Tour dans le jeu
+    private String message; // Message à afficher
     private Position from; // Position clé-valeur du premier click de l'utilisateur
     private Position to; // Position clé-valeur du second click de l'utilisateur
     private Board board = new Board(); // Échiquier sur lequel on va effectuer la partie
@@ -287,7 +287,7 @@ public class Controller implements ChessController {
                     public String textValue() {
                         return "No";
                     }
-                }).textValue() == "Yes") {
+                }).textValue().equals("Yes")) {
             newGame();
         } else {
             System.exit(0);
@@ -320,7 +320,6 @@ public class Controller implements ChessController {
      * finishTurn() : Cette
      */
     private void finishTurn(){
-        turn++;
         isBlackTurn = !isBlackTurn;
         lastPiece = board.getPiece(from);
         refreshView();
@@ -432,7 +431,7 @@ public class Controller implements ChessController {
 
     /**
      * initializeTest() : Utilisé seulement pour les tests
-     * @param hashMap
+     * @param hashMap représentation de la map
      */
     protected void initializeTest(HashMap<Position, Piece> hashMap) {
         board = new Board();
@@ -466,7 +465,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * clearView() : Permet d'effacer les pièces sur la vues
+     * clearView() : Permet d'effacer les pièces sur les vues
      */
     private void clearView() {
         for (int x = 0; x < Board.SIZE; ++x ){
@@ -485,21 +484,21 @@ public class Controller implements ChessController {
     private boolean canMove(Position from, Position to){
 
         if (isCorrectPlayer(board.getPiece(from))){
-            message = "C'est à l'équipe adverse de jouer !";
+            message = "It's the other team's turn to play!";
             return false;
         }
         if (pawnCanEat(from, to)) return true;
 
         if (isLegalMove(from, to)) {
-            message = "Mouvement interdit";
+            message = "prohibited movement";
             return false;
         }
         if(isSameColor(to)){
-            message = "La destination possède déjà une pièce";
+            message = "The destination already has a piece";
             return false;
         }
         if(collisionExist(from, to)){
-            message = "Il y a une collision";
+            message = "There is a collision";
             return false;
         }
         return true;
@@ -507,9 +506,9 @@ public class Controller implements ChessController {
 
     /**
      * Utilisé seulement pour les tests
-     * @param from
-     * @param to
-     * @return
+     * @param from position de départ de la pièce
+     * @param to position d'arrivée de la pièce
+     * @return vrai si la pièce peut se déplacer
      */
     protected boolean canMoveTest(Position from, Position to)
     {
@@ -525,7 +524,7 @@ public class Controller implements ChessController {
      */
     private boolean pawnCanEat(Position from, Position to) {
         if ((from.getY() - to.getY()) * Move.getCoef(board.getPiece(from).getColor()) > 0) return false;
-        if ( board.getPiece(from) instanceof Pawn pawn
+        if ( board.getPiece(from) instanceof Pawn
                 && board.getPiece(to) != null
                 && Move.isDiagonal(from, to)
                 && Move.getDistance(from, to) == 1 ){
@@ -595,9 +594,9 @@ public class Controller implements ChessController {
 
     /**
      * Utilisé seulement pour les tests
-     * @param from
-     * @param to
-     * @return
+     * @param from position de départ de la pièce
+     * @param to position d'arrivée de la pièce
+     * @return vrai s'il existe un risque de collision
      */
     protected boolean collisionExistTest(Position from, Position to)
     {
@@ -713,8 +712,8 @@ public class Controller implements ChessController {
 
     /**
      * Utilisé seulement pour les tests
-     * @param from
-     * @param to
+     * @param from position de départ
+     * @param to position d'arrivée de la pièce
      */
     protected void castlingTest(Position from, Position to)
     {
