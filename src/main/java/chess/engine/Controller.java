@@ -9,11 +9,9 @@ import chess.engine.board.Position;
 import chess.engine.move.Move;
 import chess.engine.piece.*;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 /**
  * Class permettant de controller une partie d'échec.
@@ -21,10 +19,9 @@ import java.util.Objects;
  */
 public class Controller implements ChessController {
     private ChessView view; // View que Controller doit gérer
+
     private int turn;
     private String message;
-
-    private int cptPawn; // Nombre de tours sans mouvement de pions
     private Position from; // Position clé-valeur du premier click de l'utilisateur
     private Position to; // Position clé-valeur du second click de l'utilisateur
     private Board board = new Board(); // Échiquier sur lequel on va effectuer la partie
@@ -33,13 +30,12 @@ public class Controller implements ChessController {
     private boolean isBlackTurn = false; // Définit si c'est au tour des blancs ou des noirs
 
     /**
-     * Constructeur du Controller
+     * Controller() : Constructeur du Controller
      */
     public Controller() {}
 
     /**
-     * Test si un roi est en échec
-     *
+     * playerIsCheck() : Test si un roi est en échec
      * @param positionOfKingToCheck Position du roi qui peut être mise en échec
      * @return vrai si le roi est échec
      */
@@ -48,8 +44,16 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Test si un roi est en échec
-     *
+     * Utilisé seulement pour les tests
+     * @param positionOfKingToCheck Position du roi qui peut être mise en échec
+     * @return vrai si le roi est échec
+     */
+    protected boolean playerIsCheckTest(Position positionOfKingToCheck){
+        return playerIsCheck(positionOfKingToCheck);
+    }
+
+    /**
+     * playerIsCheck() : Test si un roi est en échec
      * @param board Échiquier sur lequel on joue
      * @param positionOfKingToCheck position du roi à contrôler
      * @return vrai si le roi est en échec
@@ -70,8 +74,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Fonction qui recherche la position du roi d'une couleur donnée sur l'échiquier
-     *
+     * getKing() : Méthode qui recherche la position du roi d'une couleur donnée sur l'échiquier
      * @param color couleur du roi recherché
      * @return - Entry<Position, Piece> avec la position du roi et pièce de ce dernier.
      *         - null si ne trouve pas le roi
@@ -86,8 +89,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Contrôle si un joueur est en échec pour un échiquier donné
-     *
+     * isCheck() : Contrôle si un joueur est en échec pour un échiquier donné
      * @param board échiquier sur lequel on joue
      * @param from position de départ du mouvement
      * @param to position d'arrivée du mouvement
@@ -99,8 +101,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Contrôle si le jeu est en échec pour l'échiquier en cours
-     *
+     * isCheck() : Surcharge de la fonction isCheck
      * @param from position de départ du mouvement
      * @param to position d'arrivée du mouvement
      * @return vrai si le jeu est en échec
@@ -110,8 +111,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Contrôle si un joueur est en échec et mat
-     *
+     * checkmate() : Contrôle si un joueur est en échec et mat
      * @param player joueur qu'on vérifie la situation
      * @return vrai si le joueur est en échec et mat
      */
@@ -157,8 +157,17 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Démarre le jeu
-     *
+     * checkmateTest() : Utilisé seulement pour les tests
+     * @param player: la couleur du joueur
+     * @return un booléen
+     */
+    protected boolean checkmateTest(PlayerColor player)
+    {
+        return checkmate(player);
+    }
+
+    /**
+     * start() : Démarre le jeu
      * @param view La vue sur laquelle le jeu doit démarrer
      * @throws RuntimeException si la vue est null
      */
@@ -170,7 +179,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Lance une nouvelle partie
+     * newGame() : Lance une nouvelle partie
      */
     @Override
     public void newGame() {
@@ -182,14 +191,12 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Methode appelée lors de la demande de déplacement par l'utilisateur
-     *
+     * move() : Methode appelée lors de la demande de déplacement par l'utilisateur
      * @param fromX la coordonnée sur X du premier click
      * @param fromY la coordonnée sur Y du premier click
      * @param toX   la coordonnée sur X du second click
      * @param toY   la coordonnée sur Y du second click
      * @return true si le déplacement a bien été effectué
-     *
      */
     @Override
     public boolean move(int fromX, int fromY, int toX, int toY) {
@@ -264,6 +271,9 @@ public class Controller implements ChessController {
         return true;
     }
 
+    /**
+     * askNewGame() : Cette méthode est utilisée pour afficher une demande de nouvelle partie
+     */
     private void askNewGame(){
 
         if (view.askUser("Game over", opponentPlayer() + " lose the game\nNew Game ?",
@@ -282,11 +292,14 @@ public class Controller implements ChessController {
         } else {
             System.exit(0);
         }
-
-
-
     }
 
+    /**
+     * priseEnPassant(): Cette méthode est utilisée pour la prise en passant
+     * @param from : Position de départ
+     * @param to : Position d'arrivée
+     * @return un booléen indiquant si l'on la prise en passant a été effectuée
+     */
     private boolean priseEnPassant(Position from, Position to) {
         if (currentPlayer() != board.getPiece(from).getColor()) return false;
         int coef = Move.getCoef(currentPlayer());
@@ -303,7 +316,9 @@ public class Controller implements ChessController {
         return false;
     }
 
-
+    /**
+     * finishTurn() : Cette
+     */
     private void finishTurn(){
         turn++;
         isBlackTurn = !isBlackTurn;
@@ -311,6 +326,9 @@ public class Controller implements ChessController {
         refreshView();
     }
 
+    /**
+     * Promotion() : Cette méthode permet d'effectuer la promotion d'un pion
+     */
     private void Promotion() {
         class PieceChoice implements ChessView.UserChoice {
             private final PieceType pieceType;
@@ -347,19 +365,33 @@ public class Controller implements ChessController {
         }
     }
 
+    /**
+     * currentPlayer() : Cette méthode permet de connaître la couleur du joueur actuelle
+     * @return PlayerColor la couleur du joueur actuel
+     */
     private PlayerColor currentPlayer(){
         return isBlackTurn ? PlayerColor.BLACK : PlayerColor.WHITE;
     }
 
+    /**
+     * opponentPlayer() : Retourne la couleur du joueur adverse
+     * @return la couleur du joueur adverse
+     */
     private PlayerColor opponentPlayer(){
         return opponentPlayer(currentPlayer());
     }
+
+    /**
+     * opponentPlayer() : Cette méthode permet de retourner la couleur adverse en fonction d'une couleur donnée
+     * @param player : la couleur
+     * @return la couleur opposée
+     */
     private PlayerColor opponentPlayer(PlayerColor player){
         return player == PlayerColor.WHITE ? PlayerColor.BLACK : PlayerColor.WHITE;
     }
 
     /**
-     * Permet d'annuler la dernière action
+     * unDo() : Permet d'annuler la dernière action
      */
     private void unDo(){
         for (Entry<Position, Piece> entry : board.getBoard().entrySet()){
@@ -372,7 +404,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Définit si la pièce sélectionnée est celle du joueur courant
+     * isCorrectPlayer() : Définit si la pièce sélectionnée est celle du joueur courant
      * @return true si c'est le cas
      */
     private boolean isCorrectPlayer(Piece selectedPiece) {
@@ -380,8 +412,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Capture un événement de déplacement demandé par l'utilisateur et complète les attributs de la classe Controller
-     *
+     * captureEvent() : Capture un événement de déplacement demandé par l'utilisateur et complète les attributs de la classe Controller
      * @param fromX la coordonnée sur X du premier click
      * @param fromY la coordonnée sur Y du premier click
      * @param toX   la coordonnée sur X du second click
@@ -393,32 +424,50 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Initialisation d'une vue avec les pièces dans leurs positions initiales en les stockant dans une board
-     *
+     * initialize() : Initialisation d'une vue avec les pièces dans leurs positions initiales en les stockant dans une board
      */
     private void initialize() {
         board.initialize();
     }
 
+    /**
+     * initializeTest() : Utilisé seulement pour les tests
+     * @param hashMap
+     */
     protected void initializeTest(HashMap<Position, Piece> hashMap) {
         board = new Board();
        for (Entry<Position, Piece> entry : hashMap.entrySet()){
            board.add(entry.getKey(), entry.getValue());
        }
     }
+
+    /**
+     * refreshView() : permet de rafraîchir la vue
+     */
     private void refreshView(){
         displayMessage();
         clearView();
         putPieces();
     }
 
+    /**
+     * displayMessage() : permet d'afficher un message
+     */
     private void displayMessage(){
         displayMessage(message);
     }
+
+    /**
+     * displayMessage() : permet d'afficher un message
+     * @param message Le message à afficher
+     */
     private void displayMessage(String message) {
         view.displayMessage(message);
     }
 
+    /**
+     * clearView() : Permet d'effacer les pièces sur la vues
+     */
     private void clearView() {
         for (int x = 0; x < Board.SIZE; ++x ){
             for (int y = 0; y < Board.SIZE; ++y){
@@ -428,8 +477,10 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Définit si la pièce a le droit de bouger
-     * @return true si elle peut
+     * canMove() : Définit si la pièce a le droit de bouger
+     * @param from la position de départ
+     * @param to la position d'arrivée
+     * @return vrai si la pièce peut bouger
      */
     private boolean canMove(Position from, Position to){
 
@@ -454,6 +505,12 @@ public class Controller implements ChessController {
         return true;
     }
 
+    /**
+     * Utilisé seulement pour les tests
+     * @param from
+     * @param to
+     * @return
+     */
     protected boolean canMoveTest(Position from, Position to)
     {
         return canMove(from,to);
@@ -536,22 +593,20 @@ public class Controller implements ChessController {
         return collisionExist(board, from, to);
     }
 
+    /**
+     * Utilisé seulement pour les tests
+     * @param from
+     * @param to
+     * @return
+     */
     protected boolean collisionExistTest(Position from, Position to)
     {
         return collisionExist(from, to);
     }
 
-    /**
-     * Permet de définir si une pièce est présente sur le chemin et qu'elle crée une collision
-     * @return true si il y a une collision
-     */
-    private boolean collisionExist(){
-        return collisionExist(from, to);
-    }
 
     /**
-     * Permet de mettre à jour la view avec l'ajout d'une pièce
-     *
+     * putPiece() : Permet de mettre à jour la view avec l'ajout d'une pièce
      * @param entry La clé-valeur comprennent la position ainsi que la pièce à ajouter
      */
     private void putPiece(Entry<Position, Piece> entry) {
@@ -559,8 +614,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Permet de mettre à jour la view avec l'ajout d'une pièce
-     *
+     * putPiece() : Permet de mettre à jour la view avec l'ajout d'une pièce
      * @param position La position sur laquelle la pièce doit être ajoutée
      * @param piece    La pièce à ajouter
      */
@@ -570,7 +624,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Permet de mettre à jour la view avec les pièces du board
+     * putPieces() : Permet de mettre à jour la view avec les pièces du board
      */
     private void putPieces() {
         for (Entry<Position, Piece> entry : board.getBoard().entrySet()) {
@@ -579,8 +633,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Permet de mettre à jour la view avec le retrait d'une pièce
-     *
+     * removePiece() : Permet de mettre à jour la view avec le retrait d'une pièce
      * @param entry La clé-valeur comprennent la position ainsi que la pièce à retirer
      */
     private void removePiece(Entry<Position, Piece> entry) {
@@ -588,8 +641,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Permet de mettre à jour la view avec le retrait d'une pièce
-     *
+     * removePiece() : Permet de mettre à jour la view avec le retrait d'une pièce
      * @param position La position de la pièce à retirer
      */
     private void removePiece(Position position) {
@@ -597,8 +649,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Vérifie si les conditions requises au roque sont réunies
-     *
+     * canCastle() : Vérifie si les conditions requises au roque sont réunies
      * @param from position de départ du mouvement
      * @param to position d'arrivée demandée par le joueur
      * @return vrai si le roque peut être fait
@@ -618,8 +669,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Fonction qui fait le roque (voir si petit ou grand et initier le roque avec la fonction castling())
-     *
+     * castle() : Méthode qui fait le roque (voir si petit ou grand et initier le roque avec la méthode castling())
      * @param from position de départ de la pièce
      * @param to position d'arrivée demandée de la pièce
      * @return vrai si le roque peut se faire
@@ -642,8 +692,7 @@ public class Controller implements ChessController {
     }
 
     /**
-     * Fonction qui fait le roque (déplacement des pièces)
-     *
+     * castling() : Méthode qui fait le roque (déplacement des pièces)
      * @param smallCastlingAsked vrai si on demande le petit roque
      */
     private void castling(boolean smallCastlingAsked){
@@ -660,5 +709,24 @@ public class Controller implements ChessController {
         board.add(rookTo, board.getPiece(rookFrom));
         board.remove(kingFrom);
         board.remove(rookFrom);
+    }
+
+    /**
+     * Utilisé seulement pour les tests
+     * @param from
+     * @param to
+     */
+    protected void castlingTest(Position from, Position to)
+    {
+        castle(from, to);
+    }
+
+    /**
+     * getActualBoard() : permet de récupérer l'échiquier
+     * @return board
+     */
+    public Board getActualBoard()
+    {
+        return board;
     }
 }
